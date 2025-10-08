@@ -287,8 +287,8 @@ export default function Game({ isDark, onClose }: GameProps) {
               localStorage.setItem('jumpGameHighScore', currentScore.toString())
             }
 
-            // Level up every 50 points (max level 10)
-            const newLevel = Math.min(maxLevel, Math.floor(currentScore / 50) + 1)
+            // Level up every 100 points (max level 10)
+            const newLevel = Math.min(maxLevel, Math.floor(currentScore / 100) + 1)
             if (newLevel > levelRef.current) {
               levelRef.current = newLevel
               gameSpeedRef.current += 0.4
@@ -481,7 +481,7 @@ export default function Game({ isDark, onClose }: GameProps) {
               fontFamily: 'monospace'
             }}
           >
-            Score: {score} | High: {highScore} | Level: {Math.min(10, Math.floor(score / 100))}
+            Score: {score} | High: {highScore} | Level: {Math.min(10, Math.floor(score / 100) + 1)}
           </p>
           <p
             style={{
