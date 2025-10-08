@@ -102,7 +102,6 @@ export default function Game({ isDark, onClose }: GameProps) {
     // Create cityscape background with fixed seed for consistency
     const drawCityscape = () => {
       const buildingCount = 20
-      const buildingWidth = 80
       const buildings: Array<{ height: number; windows: number[][] }> = []
 
       // Use seeded random for consistent buildings
