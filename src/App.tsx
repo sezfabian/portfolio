@@ -97,8 +97,6 @@ function App() {
     }
     window.addEventListener('mousemove', handleMouseMove)
 
-    let targetZoom = 3
-
     // Update zoom based on scroll position with auto reset
     let isResetting = false
     const handlePageScroll = () => {
