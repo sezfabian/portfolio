@@ -175,48 +175,25 @@ function App() {
     let animationId: number
 
     const renderFrame = () => {
-      // Use back.png when game is open, video when game is closed
+      // Use back.png as background when game is open, video ASCII when game is closed
       if (showGame && backImageLoaded) {
-        // Render static image as ASCII
-        videoCanvas.width = cols
-        videoCanvas.height = rows
-        videoCtx.drawImage(backImage, 0, 0, videoCanvas.width, videoCanvas.height)
-        const imageData = videoCtx.getImageData(0, 0, videoCanvas.width, videoCanvas.height)
-
+        // Draw the image directly as background (not ASCII)
         ctx.fillStyle = isDark ? '#000' : '#fff'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        ctx.font = `${fontSize}px monospace`
+        // Calculate aspect ratio and draw the image to cover and stretch beyond the canvas
+        const stretchFactor = 1.3 // Stretch 30% beyond frame
+        const scale = Math.max(canvas.width / backImage.width, canvas.height / backImage.height) * stretchFactor
+        const x = (canvas.width - backImage.width * scale) / 2
+        const y = (canvas.height - backImage.height * scale) / 2
 
-        for (let i = 0; i < cols; i++) {
-          for (let j = 0; j < rows; j++) {
-            const pixelIndex = (j * cols + i) * 4
-            const r = imageData.data[pixelIndex]
-            const g = imageData.data[pixelIndex + 1]
-            const b = imageData.data[pixelIndex + 2]
-            const brightness = (r + g + b) / 3
-
-            const zoom = zoomRef.current
-            const centerX = canvas.width / 2
-            const centerY = canvas.height / 2
-
-            const baseX = (i * fontSize) - padding + mouseRef.current.x
-            const baseY = (j * fontSize) - padding + mouseRef.current.y
-
-            const x = centerX + (baseX - centerX) * zoom
-            const y = centerY + (baseY - centerY) * zoom
-
-            const charIndex = Math.floor((brightness / 255) * (chars.length - 1))
-            const char = chars[charIndex]
-
-            if (isDark) {
-              ctx.fillStyle = `rgba(${brightness}, ${brightness * 0.8}, ${brightness * 0.6}, 0.8)`
-            } else {
-              const inverted = 255 - brightness
-              ctx.fillStyle = `rgba(${inverted * 0.4}, ${inverted * 0.3}, ${inverted * 0.5}, 0.8)`
-            }
-            ctx.fillText(char, x, y)
-          }
+        if (isDark) {
+          // Apply invert filter for dark mode
+          ctx.filter = 'invert(1)'
+          ctx.drawImage(backImage, x, y, backImage.width * scale, backImage.height * scale)
+          ctx.filter = 'none'
+        } else {
+          ctx.drawImage(backImage, x, y, backImage.width * scale, backImage.height * scale)
         }
       } else if (video.readyState === video.HAVE_ENOUGH_DATA && !showGame) {
         // Render video as ASCII when game is not open

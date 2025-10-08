@@ -117,9 +117,12 @@ export default function Game({ isDark, onClose }: GameProps) {
         const windowCols = 3
         const windows: number[][] = []
 
+        // Reduce window density in dark mode for better performance
+        const windowChance = isDarkRef.current ? 0.65 : 0.3 // 35% vs 70% chance
+
         for (let row = 0; row < windowRows; row++) {
           for (let col = 0; col < windowCols; col++) {
-            if (seededRandom() > 0.3) { // 70% chance of lit window
+            if (seededRandom() > windowChance) {
               windows.push([col, row])
             }
           }
