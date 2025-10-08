@@ -7,8 +7,8 @@
   }
 }
 
-/* Mobile screens */
-@media (max-width: 768px) {
+/* Small screens - below 1010px */
+@media (max-width: 1010px) {
   .terminal-wrapper {
     bottom: 0.5rem !important;
     left: 0.5rem !important;
@@ -22,6 +22,13 @@
     padding: 0.5rem !important;
     font-size: 10px !important;
     transition: opacity 0.3s ease, transform 0.3s ease !important;
+  }
+
+  /* Hide terminal when game is active on small screens */
+  .terminal-wrapper.game-active {
+    opacity: 0 !important;
+    transform: translateY(100%) !important;
+    pointer-events: none !important;
   }
 
   /* Hide terminal when near bottom of page */
@@ -51,8 +58,8 @@
   }
 }
 
-/* Medium screens - adjust width and add margin */
-@media (min-width: 769px) and (max-width: 1200px) {
+/* Medium to large screens - above 1010px */
+@media (min-width: 1011px) and (max-width: 1200px) {
   .terminal-wrapper {
     width: 45% !important;
     max-width: 500px !important;

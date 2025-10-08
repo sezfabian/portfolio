@@ -5,6 +5,7 @@ import cvPdf from '../assets/cv.pdf'
 interface TerminalProps {
   isDark: boolean
   onGameLaunch: () => void
+  isGameActive?: boolean
 }
 
 interface DirectoryStructure {
@@ -451,7 +452,7 @@ Available directories: ${Object.keys(fileSystem).join(', ')}`
   }
 })
 
-export default function Terminal({ isDark, onGameLaunch }: TerminalProps) {
+export default function Terminal({ isDark, onGameLaunch, isGameActive = false }: TerminalProps) {
   const [history, setHistory] = useState<{ input: string; output: string }[]>([
     { input: '', output: 'Welcome to my Portfolio Terminal. Type "help" for available commands.\nTry "cd about" or "cd projects" to navigate sections.' }
   ])
@@ -583,7 +584,7 @@ export default function Terminal({ isDark, onGameLaunch }: TerminalProps) {
   return (
     <div
       onClick={handleTerminalClick}
-      className="terminal-wrapper"
+      className={`terminal-wrapper ${isGameActive ? 'game-active' : ''}`}
       style={{
         position: 'fixed',
         bottom: '2rem',

@@ -1,2 +1,8 @@
 # Local Netlify folder
 .netlify
+# Ignore build and dist directory
+build
+dist
+
+# Ignore node_modules directory
+node_modules

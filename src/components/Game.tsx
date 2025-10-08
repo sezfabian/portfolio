@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { parseGIF, decompressFrames } from 'gifuct-js'
 import alienGif from '../assets/alien.gif'
-import crateImg from '../assets/crate.png'
+import crateImg from '../assets/ice.png'
 import './Game.css'
 
 interface GameProps {
@@ -16,11 +16,14 @@ export default function Game({ isDark, onClose }: GameProps) {
     const saved = localStorage.getItem('jumpGameHighScore')
     return saved ? parseInt(saved, 10) : 0
   })
+  const [isGameOver, setIsGameOver] = useState(false)
   const isDarkRef = useRef(isDark)
-  const gameSpeedRef = useRef(2.5)
+  const gameSpeedRef = useRef(1)
   const levelRef = useRef(1)
   const failedLevelRef = useRef(1)
   const spawnRateRef = useRef(400)
+  const jumpTriggerRef = useRef<() => void>(() => {})
+  const resetGameRef = useRef<() => void>(() => {})
 
   // Update ref when isDark changes
   useEffect(() => {
@@ -75,19 +78,16 @@ export default function Game({ isDark, onClose }: GameProps) {
     // Physics values that scale with level for forgiveness
     const getGravity = () => {
       // Very low gravity for slow-motion effect
-      const baseGravity = 0.15
+      const baseGravity = 0.12
       const levelIncrease = Math.min(levelRef.current - 1, 5) * 0.015
       return baseGravity + levelIncrease
     }
 
     const getJumpStrength = () => {
-      // Lower jump strength for slow, floaty ascent
-      const baseJump = -5
-      const levelDecrease = Math.min(levelRef.current - 1, 5) * 0.04
-      return baseJump - levelDecrease
+      return -5
     }
 
-    const doubleJumpStrength = -5
+    const doubleJumpStrength = -6
     const groundY = 160
 
     const obstacles: Array<{ x: number; width: number; height: number }> = []
@@ -138,7 +138,7 @@ export default function Game({ isDark, onClose }: GameProps) {
     const buildingWidth = 80
 
     const spawnObstacle = () => {
-      // At level 1-2: only 1 crate, level 3-5: 1-2 crates, level 6+: 1-3 crates
+      // At level 1-2: only 1 ice block, level 3-5: 1-2 ice blocks, level 6+: 1-3 ice blocks
       let maxCrates = 1
       if (levelRef.current >= 3) maxCrates = 2
       if (levelRef.current >= 6) maxCrates = 3
@@ -193,6 +193,9 @@ export default function Game({ isDark, onClose }: GameProps) {
       }
     }
 
+    // Store jump function in ref for external access
+    jumpTriggerRef.current = performJump
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.key === ' ' || e.key === 'ArrowUp') && !gameOver) {
         performJump()
@@ -219,19 +222,23 @@ export default function Game({ isDark, onClose }: GameProps) {
       player.hasDoubleJumped = false
       obstacles.length = 0
       gameOver = false
+      setIsGameOver(false)
       frameCount = 0
       cityScapeOffset = 0
 
       // Restart at the level they failed
       levelRef.current = failedLevelRef.current
-      currentScore = (failedLevelRef.current - 1) * 50
+      currentScore = (failedLevelRef.current - 1) * 100
 
       // Set appropriate speed and spawn rate for the level
       gameSpeedRef.current = 2.5 + (failedLevelRef.current - 1) * 0.4
-      spawnRateRef.current = Math.max(100, 400 - (failedLevelRef.current - 1) * 12)
+      spawnRateRef.current = Math.max(100, 900 - (failedLevelRef.current - 1) * 12)
 
       setScore(currentScore)
     }
+
+    // Store reset function in ref for external access
+    resetGameRef.current = resetGame
 
     window.addEventListener('keydown', handleKeyDown)
     canvas.addEventListener('touchstart', handleTouch)
@@ -306,6 +313,10 @@ export default function Game({ isDark, onClose }: GameProps) {
             (player.y - 50) + player.height - collisionMargin > groundY + 30 - obstacle.height
           ) {
             gameOver = true
+            // Delay showing restart button by 1 second
+            setTimeout(() => {
+              setIsGameOver(true)
+            }, 1000)
             failedLevelRef.current = levelRef.current // Save the level they failed at
           }
         }
@@ -343,7 +354,7 @@ export default function Game({ isDark, onClose }: GameProps) {
 
         // Draw ground
         ctx.fillStyle = isDarkRef.current ? '#333' : '#ccc'
-        ctx.fillRect(0, groundY + 30, canvas.width, 2)
+        ctx.fillRect(0, groundY + 32, canvas.width, 2)
 
         // Draw player (alien) with animated frames
         if (framesLoaded && frames.length > 0) {
@@ -362,7 +373,35 @@ export default function Game({ isDark, onClose }: GameProps) {
           if (tempCtx) {
             tempCanvas.width = frames[currentFrame].width
             tempCanvas.height = frames[currentFrame].height
-            tempCtx.putImageData(frames[currentFrame], 0, 0)
+
+            // Get the frame data
+            const frameData = frames[currentFrame]
+            tempCtx.putImageData(frameData, 0, 0)
+
+            // In dark mode, brighten green pixels
+            if (isDarkRef.current) {
+              const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
+              const data = imageData.data
+
+              for (let i = 0; i < data.length; i += 4) {
+                const r = data[i]
+                const g = data[i + 1]
+                const b = data[i + 2]
+                const alpha = data[i + 3]
+
+                // Only modify pixels that are already green (green > red and green > blue)
+                if (alpha > 50 && g > r && g > b) {
+                  // Brighten the green to maximum
+                  data[i] = 0       // R - keep low
+                  data[i + 1] = 255 // G - max brightness
+                  data[i + 2] = 0   // B - keep low
+                  // Keep original alpha
+                }
+              }
+
+              tempCtx.putImageData(imageData, 0, 0)
+            }
+
             ctx.drawImage(tempCanvas, player.x, player.y - 50, player.width, player.height)
           }
         }
@@ -432,7 +471,7 @@ export default function Game({ isDark, onClose }: GameProps) {
               fontFamily: 'monospace'
             }}
           >
-            JUMP GAME
+            ALIEN vs ICE
           </h2>
           <p
             style={{
@@ -453,7 +492,7 @@ export default function Game({ isDark, onClose }: GameProps) {
               fontFamily: 'monospace'
             }}
           >
-            Press SPACE/↑ or tap to jump
+            Press SPACE/↑ or tap to jump and avoid the ice blocks
           </p>
         </div>
         <button
@@ -481,6 +520,55 @@ export default function Game({ isDark, onClose }: GameProps) {
           display: 'block'
         }}
       />
+
+      {/* Large touch area for mobile screens */}
+      <div
+        className="mobile-touch-area"
+        onClick={() => isGameOver ? resetGameRef.current() : jumpTriggerRef.current()}
+        style={{
+          marginTop: '1rem',
+          padding: '2rem',
+          backgroundColor: isDark ? 'rgba(0, 255, 0, 0.1)' : 'rgba(0, 0, 170, 0.1)',
+          border: `2px dashed ${isDark ? '#0f0' : '#00a'}`,
+          borderRadius: '8px',
+          cursor: 'pointer',
+          textAlign: 'center',
+          fontFamily: 'monospace',
+          fontSize: '1.2rem',
+          color: isDark ? '#0f0' : '#00a',
+          userSelect: 'none',
+          transition: 'all 0.2s ease'
+        }}
+        onMouseDown={(e) => {
+          const target = e.currentTarget
+          target.style.transform = 'scale(0.98)'
+          target.style.backgroundColor = isDark ? 'rgba(0, 255, 0, 0.2)' : 'rgba(0, 0, 170, 0.2)'
+        }}
+        onMouseUp={(e) => {
+          const target = e.currentTarget
+          target.style.transform = 'scale(1)'
+          target.style.backgroundColor = isDark ? 'rgba(0, 255, 0, 0.1)' : 'rgba(0, 0, 170, 0.1)'
+        }}
+        onMouseLeave={(e) => {
+          const target = e.currentTarget
+          target.style.transform = 'scale(1)'
+          target.style.backgroundColor = isDark ? 'rgba(0, 255, 0, 0.1)' : 'rgba(0, 0, 170, 0.1)'
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault()
+          const target = e.currentTarget
+          target.style.transform = 'scale(0.98)'
+          target.style.backgroundColor = isDark ? 'rgba(0, 255, 0, 0.2)' : 'rgba(0, 0, 170, 0.2)'
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault()
+          const target = e.currentTarget
+          target.style.transform = 'scale(1)'
+          target.style.backgroundColor = isDark ? 'rgba(0, 255, 0, 0.1)' : 'rgba(0, 0, 170, 0.1)'
+        }}
+      >
+        {isGameOver ? 'TAP TO RESTART LEVEL' : 'TAP HERE TO JUMP'}
+      </div>
     </div>
   )
 }

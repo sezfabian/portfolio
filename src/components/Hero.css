@@ -1,5 +1,5 @@
 /* Responsive adjustments for Hero */
-@media (max-width: 768px) {
+@media (max-width: 1010px) {
   .hero-wrapper h1 {
     font-size: 2rem !important;
   }
@@ -11,15 +11,5 @@
   .hero-wrapper a {
     font-size: 0.875rem !important;
     padding: 0.4rem 0.8rem !important;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .hero-wrapper h1 {
-    font-size: 2.5rem !important;
-  }
-
-  .hero-wrapper p {
-    font-size: 1.1rem !important;
   }
 }

@@ -1,7 +1,7 @@
 /* Minimal Projects Section Styles */
 
 /* Responsive adjustments - text sizes only */
-@media (max-width: 768px) {
+@media (max-width: 1010px) {
   #projects h2 {
     font-size: 1.75rem !important;
   }
@@ -20,27 +20,5 @@
 
   #projects span {
     font-size: 0.65rem !important;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  #projects h2 {
-    font-size: 2rem !important;
-  }
-
-  #projects h3 {
-    font-size: 1.3rem !important;
-  }
-
-  #projects p {
-    font-size: 0.9rem !important;
-  }
-
-  #projects a {
-    font-size: 0.8rem !important;
-  }
-
-  #projects span {
-    font-size: 0.7rem !important;
   }
 }

@@ -263,8 +263,8 @@
     color: var(--sm-accent, #ff0000);
   }
 
-  /* Mobile responsiveness */
-  @media (max-width: 768px) {
+  /* Very small screens - below 600px (full width menu) */
+  @media (max-width: 600px) {
     .staggered-menu-header {
       padding: 1rem;
       pointer-events: auto !important;
@@ -302,8 +302,48 @@
     }
   }
 
-  /* Medium screens */
-  @media (min-width: 769px) and (max-width: 1200px) {
+  /* Medium screens - 600px to 1010px (50% width menu) */
+  @media (min-width: 601px) and (max-width: 1010px) {
+    .staggered-menu-header {
+      padding: 1rem;
+      pointer-events: auto !important;
+    }
+
+    .sm-logo h2 {
+      font-size: 1.5rem !important;
+    }
+
+    .staggered-menu-panel {
+      width: 100vw !important;
+      max-width: 100vw !important;
+      padding: 4em 1.5em 1.5em 1.5em !important;
+      margin-left: 50% !important;
+    }
+
+    .sm-prelayers {
+      width: 50vw !important;
+      max-width: 50vw !important;
+    }
+
+    .sm-panel-item {
+      font-size: 2rem !important;
+      letter-spacing: -1px !important;
+      padding-right: 0.8em !important;
+    }
+
+    .sm-panel-list[data-numbering] .sm-panel-item::after {
+      font-size: 0.7rem !important;
+      right: 0.5em !important;
+      top: 0.3em !important;
+    }
+
+    .sm-socials-link {
+      font-size: 0.9rem !important;
+    }
+  }
+
+  /* Large screens - above 1010px */
+  @media (min-width: 1011px) and (max-width: 1200px) {
     .staggered-menu-panel {
       width: clamp(300px, 45vw, 500px) !important;
     }

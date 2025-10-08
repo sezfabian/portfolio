@@ -311,7 +311,7 @@ function App() {
         )}
       </main>
 
-      <Terminal isDark={isDark} onGameLaunch={() => setShowGame(true)} />
+      <Terminal isDark={isDark} onGameLaunch={() => setShowGame(true)} isGameActive={showGame} />
     </div>
   )
 }

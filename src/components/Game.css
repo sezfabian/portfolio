@@ -1,5 +1,10 @@
-/* Mobile screens */
-@media (max-width: 768px) {
+/* Hide mobile touch area by default */
+.mobile-touch-area {
+  display: none;
+}
+
+/* Small screens - below 1010px */
+@media (max-width: 1010px) {
   .game-wrapper {
     position: fixed !important;
     top: 200px !important;
@@ -23,10 +28,27 @@
     max-width: 100%;
     height: auto !important;
   }
+
+  /* Show and style the mobile touch area */
+  .mobile-touch-area {
+    display: block !important;
+    min-height: 80px;
+    font-weight: bold;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
 }
 
-/* Medium screens - adjust width and add margin */
-@media (min-width: 769px) and (max-width: 1200px) {
+/* Medium to large screens - above 1010px */
+@media (min-width: 1011px) and (max-width: 1200px) {
   .game-wrapper {
     right: 2rem !important;
     width: 45% !important;
