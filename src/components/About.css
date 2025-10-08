@@ -1,0 +1,42 @@
+/* Minimal About Section Styles */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #about {
+        margin-top: -20rem;
+    }
+
+  #about h2 {
+    font-size: 1.75rem !important;
+  }
+
+  #about h3 {
+    font-size: 1.25rem !important;
+  }
+
+  #about h4 {
+    font-size: 0.875rem !important;
+  }
+
+  #about p {
+    font-size: 0.9rem !important;
+  }
+
+  #about > div > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  #about h2 {
+    font-size: 2rem !important;
+  }
+
+  #about h3 {
+    font-size: 1.3rem !important;
+  }
+
+  #about p {
+    font-size: 1rem !important;
+  }
+}

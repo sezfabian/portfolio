@@ -1,0 +1,77 @@
+#root {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+/* Subtle gradient overlays at top and bottom */
+#root::before,
+#root::after {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+#root::before {
+  top: 0;
+  height: 150px;
+  background: linear-gradient(to bottom, var(--bg-color, #000) 0%, transparent 100%);
+}
+
+#root::after {
+  bottom: 0;
+  height: 150px;
+  background: linear-gradient(to top, var(--bg-color, #000) 0%, transparent 100%);
+}
+
+/* Mobile adjustment */
+@media (max-width: 768px) {
+  #root::before,
+  #root::after {
+    height: 100px;
+  }
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}

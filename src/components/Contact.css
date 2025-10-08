@@ -1,0 +1,28 @@
+/* Contact Section Styles */
+
+/* Responsive adjustments - text sizes only */
+@media (max-width: 768px) {
+  #contact h2 {
+    font-size: 1.75rem !important;
+  }
+
+  #contact h4 {
+    font-size: 0.75rem !important;
+  }
+
+  #contact p,
+  #contact a {
+    font-size: 0.9rem !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  #contact h2 {
+    font-size: 2rem !important;
+  }
+
+  #contact p,
+  #contact a {
+    font-size: 0.95rem !important;
+  }
+}

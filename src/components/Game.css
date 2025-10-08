@@ -1,0 +1,35 @@
+/* Mobile screens */
+@media (max-width: 768px) {
+  .game-wrapper {
+    position: fixed !important;
+    top: 200px !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: 100% !important;
+    padding: 0.75rem !important;
+  }
+
+  .game-wrapper h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .game-wrapper p {
+    font-size: 0.75rem !important;
+  }
+
+  .game-wrapper canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+}
+
+/* Medium screens - adjust width and add margin */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .game-wrapper {
+    right: 2rem !important;
+    width: 45% !important;
+    margin-right: 10px !important;
+  }
+}

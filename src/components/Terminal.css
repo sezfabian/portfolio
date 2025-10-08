@@ -1,0 +1,73 @@
+/* Large screens - keep terminal in left half */
+@media (min-width: 1201px) {
+  .terminal-wrapper {
+    width: 40% !important;
+    max-width: calc(50vw) !important;
+    left: 2rem !important;
+  }
+}
+
+/* Mobile screens */
+@media (max-width: 768px) {
+  .terminal-wrapper {
+    bottom: 0.5rem !important;
+    left: 0.5rem !important;
+    right: 2rem !important;
+    width: calc(100% - 2rem) !important;
+    max-width: 100% !important;
+    height: 200px !important;
+    max-height: 200px !important;
+    border-radius: 8px 8px 0 0 !important;
+    margin: 0 !important;
+    padding: 0.5rem !important;
+    font-size: 10px !important;
+    transition: opacity 0.3s ease, transform 0.3s ease !important;
+  }
+
+  /* Hide terminal when near bottom of page */
+  @supports (animation-timeline: scroll()) {
+    .terminal-wrapper {
+      animation: hide-terminal-mobile linear;
+      animation-timeline: scroll();
+      animation-range: 80% 100%;
+    }
+  }
+
+  @keyframes hide-terminal-mobile {
+    to {
+      opacity: 0;
+      transform: translateY(100%);
+      pointer-events: none;
+    }
+  }
+
+  .terminal-wrapper .terminal-output {
+    font-size: 10px !important;
+    max-height: 120px !important;
+  }
+
+  .terminal-wrapper input {
+    font-size: 10px !important;
+  }
+}
+
+/* Medium screens - adjust width and add margin */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .terminal-wrapper {
+    width: 45% !important;
+    max-width: 500px !important;
+    height: 300px !important;
+    left: 1rem !important;
+    margin-left: 5px !important;
+    font-size: 12px !important;
+  }
+
+  .terminal-wrapper .terminal-output {
+    font-size: 12px !important;
+    max-height: 200px !important;
+  }
+
+  .terminal-wrapper input {
+    font-size: 12px !important;
+  }
+}
