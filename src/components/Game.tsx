@@ -393,7 +393,7 @@ export default function Game({ isDark, onClose }: GameProps) {
                 if (alpha > 50 && g > r && g > b) {
                   // Brighten the green to maximum
                   data[i] = 0       // R - keep low
-                  data[i + 1] = 255 // G - max brightness
+                  data[i + 1] = 200 // G - max brightness
                   data[i + 2] = 0   // B - keep low
                   // Keep original alpha
                 }
