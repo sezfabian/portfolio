@@ -481,7 +481,7 @@ export default function Game({ isDark, onClose }: GameProps) {
               fontFamily: 'monospace'
             }}
           >
-            Score: {score} | High: {highScore} | Level: {Math.min(10, Math.floor(score / 100) + 1)}
+            Score: {score} | High: {highScore} | Level: {Math.min(10, Math.floor(score / 100))}
           </p>
           <p
             style={{
