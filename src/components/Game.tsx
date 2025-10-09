@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { parseGIF, decompressFrames } from 'gifuct-js'
 import alienGif from '../assets/alien.gif'
 import crateImg from '../assets/ice.png'
+import alienAudio from '../assets/alien.ogg'
+// import jumpSound from '../assets/jump.ogg' // Uncomment when jump sound file is added
 import './Game.css'
 
 interface GameProps {
@@ -12,13 +14,17 @@ interface GameProps {
 
 export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const jumpSoundRef = useRef<(() => void) | null>(null)
   const [score, setScore] = useState(0)
   const [highScore, setHighScore] = useState(() => {
     const saved = localStorage.getItem('jumpGameHighScore')
     return saved ? parseInt(saved, 10) : 0
   })
   const [isGameOver, setIsGameOver] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
   const isDarkRef = useRef(isDark)
+  const isMutedRef = useRef(isMuted)
   const gameSpeedRef = useRef(1)
   const levelRef = useRef(1)
   const failedLevelRef = useRef(1)
@@ -26,10 +32,77 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
   const jumpTriggerRef = useRef<() => void>(() => {})
   const resetGameRef = useRef<() => void>(() => {})
 
-  // Update ref when isDark changes
+  // Update refs when props/state change
   useEffect(() => {
     isDarkRef.current = isDark
   }, [isDark])
+
+  useEffect(() => {
+    isMutedRef.current = isMuted
+  }, [isMuted])
+
+  // Handle background music and sound effects
+  useEffect(() => {
+    // Create background music audio element
+    const audio = new Audio(alienAudio)
+    audio.loop = true
+    audio.volume = isMuted ? 0 : 0.3 // Set volume to 30% for background music
+    audioRef.current = audio
+
+    // Create jump sound effect using Web Audio API (programmatic beep)
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+
+    const createJumpSound = () => {
+      // Check mute status at call time, not creation time
+      if (isMutedRef.current) return
+
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+
+      // Quick rising beep sound
+      oscillator.frequency.setValueAtTime(300, audioContext.currentTime)
+      oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1)
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1)
+
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.1)
+    }
+
+    // Store the function in ref
+    jumpSoundRef.current = createJumpSound
+
+    // Play audio when game starts
+    const playPromise = audio.play()
+
+    // Handle play promise to avoid errors
+    if (playPromise !== undefined) {
+      playPromise.catch(error => {
+        console.log('Audio autoplay prevented:', error)
+      })
+    }
+
+    // Cleanup: stop and remove audio when component unmounts
+    return () => {
+      audio.pause()
+      audio.currentTime = 0
+      audioRef.current = null
+      jumpSoundRef.current = null
+      audioContext.close()
+    }
+  }, [])
+
+  // Handle mute toggle
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : 0.3
+    }
+    // jumpSoundRef stores a function, so mute is handled inside the function
+  }, [isMuted])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -214,6 +287,11 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
 
       const jumpStrength = getJumpStrength()
 
+      // Play jump sound effect
+      if (jumpSoundRef.current && typeof jumpSoundRef.current === 'function') {
+        jumpSoundRef.current() // Call the function to create and play sound
+      }
+
       // First jump - full height
       if (!player.jumping) {
         player.velocityY = jumpStrength
@@ -271,6 +349,14 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
       spawnRateRef.current = Math.max(100, 900 - (failedLevelRef.current - 1) * 12)
 
       setScore(currentScore)
+
+      // Restart audio from beginning when restarting game
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0
+        audioRef.current.play().catch(error => {
+          console.log('Audio play prevented:', error)
+        })
+      }
     }
 
     // Store reset function in ref for external access
@@ -349,6 +435,11 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
             (player.y - 50) + player.height - collisionMargin > groundY + 30 - obstacle.height
           ) {
             gameOver = true
+            // Pause and reset audio on game over
+            if (audioRef.current) {
+              audioRef.current.pause()
+              audioRef.current.currentTime = 0
+            }
             // Delay showing restart button by 1 second
             setTimeout(() => {
               setIsGameOver(true)
@@ -496,19 +587,48 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
             Press SPACE/↑ or tap to jump and avoid the ice blocks
           </p>
         </div>
-        <button
-          onClick={onClose}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: isDark ? '#fff' : '#000',
-            fontSize: '1.5rem',
-            cursor: 'pointer',
-            padding: '0.5rem'
-          }}
-        >
-          ✕
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          {/* Mute button */}
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            style={{
+              background: 'transparent',
+              border: `2px solid ${isDark ? '#0f0' : '#00a'}`,
+              borderRadius: '4px',
+              color: isDark ? '#0f0' : '#00a',
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              padding: '0.3rem 0.6rem',
+              fontFamily: 'monospace',
+              transition: 'all 0.2s ease',
+              fontWeight: 'bold'
+            }}
+            title={isMuted ? 'Unmute' : 'Mute'}
+          >
+            {isMuted ? '[X]' : '[♪]'}
+          </button>
+          {/* Close button */}
+          <button
+            onClick={() => {
+              // Stop audio when closing game
+              if (audioRef.current) {
+                audioRef.current.pause()
+                audioRef.current.currentTime = 0
+              }
+              onClose()
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: isDark ? '#fff' : '#000',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              padding: '0.5rem'
+            }}
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       <canvas
