@@ -49,8 +49,8 @@ const projects: Project[] = [
   },
   {
     title: 'MASTER-SLAVE SALP SWARM OPTIMIZER',
-    description: 'A Master-Slave Salp Swarm Algorithm Optimizer for Hybrid Energy Storage System Control Strategy in Electric Vehicles. Published research focusing on optimization algorithms for energy management systems.',
-    tech: ['Python', 'MATLAB', 'Algorithm Design', 'Energy Systems'],
+    description: 'Optimizer algorithm for Hybrid Energy Storage System Control Strategy in Electric Vehicles. Published research focusing on optimization algorithms for energy management systems.',
+    tech: ['Python', 'MATLAB', 'Machine Learning','Algorithm Design', 'Hybrid Energy Systems'],
     image: mssaImg,
     link: 'https://www.hindawi.com/journals/jen/2022/1648433/'
   },
@@ -72,7 +72,9 @@ export default function Projects({ isDark }: ProjectsProps) {
         padding: '2rem 2rem 4rem 2rem',
         display: 'flex',
         justifyContent: 'flex-end',
-        scrollSnapAlign: 'start'
+        scrollSnapAlign: 'start',
+        position: 'relative',
+        zIndex: 1
       }}
     >
       <div
@@ -80,7 +82,9 @@ export default function Projects({ isDark }: ProjectsProps) {
           maxWidth: '1200px',
           fontFamily: 'monospace',
           width: window.innerWidth >= 768 ? 'calc(50% - 2rem)' : '100%',
-          marginRight: window.innerWidth >= 768 ? '2rem' : '0'
+          marginRight: window.innerWidth >= 768 ? '2rem' : '0',
+          position: 'relative',
+          zIndex: 1
         }}
       >
         <h2
@@ -114,7 +118,7 @@ export default function Projects({ isDark }: ProjectsProps) {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
+                  gridTemplateColumns: window.innerWidth > 1010 ? '1fr 1fr' : '1fr',
                   gap: '2rem',
                   marginBottom: '1rem'
                 }}
@@ -125,11 +129,9 @@ export default function Projects({ isDark }: ProjectsProps) {
                     aspectRatio: '4/2.5',
                     backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0',
                     border: `1px solid ${isDark ? '#333' : '#ccc'}`,
-                    overflow: 'visible',
+                    overflow: window.innerWidth > 1460 ? 'visible' : 'hidden',
                     position: 'relative',
-                    borderRadius: '5px',
-                    transition: 'all 0.3s ease',
-                    zIndex: 1
+                    borderRadius: '5px'
                   }}
                 >
                   <img
@@ -142,11 +144,13 @@ export default function Projects({ isDark }: ProjectsProps) {
                       filter: 'grayscale(70%)',
                       transition: 'all 0.3s ease',
                       borderRadius: '5px',
-                      transformOrigin: 'center'
+                      transformOrigin: 'center',
+                      position: 'relative',
+                      zIndex: 1
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.filter = 'grayscale(0%)'
-                      e.currentTarget.style.zIndex = '10'
+                      e.currentTarget.style.zIndex = '1001'
                       // On larger screens (>1010px), move image left while scaling
                       if (window.innerWidth > 1010) {
                         e.currentTarget.style.transform = 'scale(1.5) translateX(-15%)'
@@ -168,7 +172,7 @@ export default function Projects({ isDark }: ProjectsProps) {
                     style={{
                       fontSize: '1.5rem',
                       fontWeight: 300,
-                      marginBottom: '0.75rem',
+                      marginBottom: '0.5rem',
                       marginTop: '0rem',
                       color: isDark ? '#0f0' : '#00a',
                       letterSpacing: '-0.01em'
@@ -195,6 +199,7 @@ export default function Projects({ isDark }: ProjectsProps) {
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr',
+                  marginTop: '0.5rem',
                   gap: '2rem'
                 }}
               >
@@ -226,7 +231,7 @@ export default function Projects({ isDark }: ProjectsProps) {
                     flexWrap: 'wrap',
                     gap: '0.5rem',
                     alignItems: 'center',
-                    marginTop: '-1rem'
+                    marginTop: '0rem'
                   }}
                 >
                   {project.tech.map((tech, techIndex) => (
