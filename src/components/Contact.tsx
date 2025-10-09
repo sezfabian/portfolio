@@ -21,7 +21,7 @@ export default function Contact({ isDark }: ContactProps) {
         style={{
           maxWidth: '800px',
           fontFamily: 'monospace',
-          width: window.innerWidth >= 768 ? 'calc(50% - 2rem)' : '100%',
+          width: '100%',
           marginRight: window.innerWidth >= 768 ? '2rem' : '0'
         }}
       >

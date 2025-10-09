@@ -413,17 +413,25 @@ function App() {
         isDark={isDark}
       />
 
-      <main style={{ position: 'relative', zIndex: window.innerWidth > 1010 ? 1000 : 10 }}>
-        {!showGame ? (
-          <>
-            <Hero isDark={isDark} />
-            <About isDark={isDark} />
-            <Projects isDark={isDark} />
-            <Contact isDark={isDark} />
-          </>
-        ) : (
-          <Game isDark={isDark} onClose={() => setShowGame(false)} isMobile={isMobile} />
-        )}
+      <main style={{
+        position: 'relative',
+        zIndex: window.innerWidth > 1010 ? 200 : 10,
+        width: window.innerWidth > 1010 ? '50%' : '100%',
+        marginLeft: window.innerWidth > 1010 ? '50%' : '0',
+        pointerEvents: window.innerWidth > 1010 ? 'none' : 'auto'
+      }}>
+        <div style={{ pointerEvents: 'auto' }}>
+          {!showGame ? (
+            <>
+              <Hero isDark={isDark} />
+              <About isDark={isDark} />
+              <Projects isDark={isDark} />
+              <Contact isDark={isDark} />
+            </>
+          ) : (
+            <Game isDark={isDark} onClose={() => setShowGame(false)} isMobile={isMobile} />
+          )}
+        </div>
       </main>
 
       <Terminal isDark={isDark} onGameLaunch={() => setShowGame(true)} isGameActive={showGame} />

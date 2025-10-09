@@ -74,17 +74,17 @@ export default function Projects({ isDark }: ProjectsProps) {
         justifyContent: 'flex-end',
         scrollSnapAlign: 'start',
         position: 'relative',
-        zIndex: 1
+        zIndex: 101
       }}
     >
       <div
         style={{
           maxWidth: '1200px',
           fontFamily: 'monospace',
-          width: window.innerWidth >= 768 ? 'calc(50% - 2rem)' : '100%',
+          width: '100%',
           marginRight: window.innerWidth >= 768 ? '2rem' : '0',
           position: 'relative',
-          zIndex: 1
+          zIndex: 101
         }}
       >
         <h2
@@ -146,11 +146,11 @@ export default function Projects({ isDark }: ProjectsProps) {
                       borderRadius: '5px',
                       transformOrigin: 'center',
                       position: 'relative',
-                      zIndex: 1
+                      zIndex: 101
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.filter = 'grayscale(0%)'
-                      e.currentTarget.style.zIndex = '1001'
+                      e.currentTarget.style.zIndex = '101'
                       // On larger screens (>1010px), move image left while scaling
                       if (window.innerWidth > 1010) {
                         e.currentTarget.style.transform = 'scale(1.5) translateX(-15%)'
@@ -161,7 +161,7 @@ export default function Projects({ isDark }: ProjectsProps) {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.filter = 'grayscale(70%)'
                       e.currentTarget.style.transform = 'scale(1)'
-                      e.currentTarget.style.zIndex = '1'
+                      e.currentTarget.style.zIndex = '100'
                     }}
                   />
                 </div>

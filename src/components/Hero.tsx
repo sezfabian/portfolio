@@ -21,7 +21,7 @@ export default function Hero({ isDark }: HeroProps) {
       <div
         style={{
           maxWidth: '800px',
-          width: window.innerWidth >= 768 ? 'calc(50% - 2rem)' : '100%',
+          width: '100%',
           marginRight: window.innerWidth >= 768 ? '2rem' : '0',
           position: 'relative',
           marginTop: window.innerWidth <= 768 ? '-15rem' : '-2rem'
