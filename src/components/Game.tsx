@@ -525,8 +525,8 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
       {/* Large touch area for mobile screens */}
       <div
         className="mobile-touch-area"
-        onClick={(e) => {
-          e.preventDefault()
+        onClick={() => {
+          // Desktop: onClick for mouse
           isGameOver ? resetGameRef.current() : jumpTriggerRef.current()
         }}
         style={{
@@ -569,9 +569,12 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
         }}
         onTouchEnd={(e) => {
           e.preventDefault()
+          e.stopPropagation()
           const target = e.currentTarget
           target.style.transform = 'scale(1)'
           target.style.backgroundColor = isDark ? 'rgba(0, 255, 0, 0.1)' : 'rgba(0, 0, 170, 0.1)'
+          // Mobile: trigger action on touch end
+          isGameOver ? resetGameRef.current() : jumpTriggerRef.current()
         }}
       >
         {isGameOver ? 'TAP TO RESTART LEVEL' : 'TAP HERE TO JUMP'}
