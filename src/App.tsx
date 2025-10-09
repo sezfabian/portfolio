@@ -37,6 +37,8 @@ function App() {
 
   const [isDark, setIsDark] = useState(getSystemTheme())
   const [showGame, setShowGame] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadingText, setLoadingText] = useState('DECRYPTING')
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight
@@ -64,6 +66,44 @@ function App() {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  // Loading text animation effect
+  useEffect(() => {
+    if (!isLoading) return
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?'
+    const targetText = 'DECRYPTING'
+    let frame = 0
+
+    const interval = setInterval(() => {
+      frame++
+
+      if (frame < 30) {
+        // Scramble phase
+        setLoadingText(
+          Array.from({ length: 10 }, () =>
+            chars[Math.floor(Math.random() * chars.length)]
+          ).join('')
+        )
+      } else if (frame < 60) {
+        // Partial reveal phase
+        const revealed = Math.floor((frame - 30) / 3)
+        setLoadingText(
+          targetText.slice(0, revealed) +
+          Array.from({ length: 10 - revealed }, () =>
+            chars[Math.floor(Math.random() * chars.length)]
+          ).join('')
+        )
+      } else {
+        // Full text with dots (1-4 dots cycling every 4 frames)
+        const dotCount = ((Math.floor(frame / 4) % 4) + 1)
+        const dots = '.'.repeat(dotCount)
+        setLoadingText(targetText + dots)
+      }
+    }, 50)
+
+    return () => clearInterval(interval)
+  }, [isLoading])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -159,7 +199,23 @@ function App() {
     let backImageLoaded = false
     backImage.onload = () => {
       backImageLoaded = true
+      checkAssetsLoaded()
     }
+
+    // Track video loading
+    let videoLoaded = false
+    const handleVideoCanPlay = () => {
+      videoLoaded = true
+      checkAssetsLoaded()
+    }
+
+    const checkAssetsLoaded = () => {
+      if (backImageLoaded && videoLoaded) {
+        setTimeout(() => setIsLoading(false), 500)
+      }
+    }
+
+    video.addEventListener('canplaythrough', handleVideoCanPlay)
 
     // Play video only when game is not active
     if (!showGame) {
@@ -188,10 +244,30 @@ function App() {
         const y = (canvas.height - backImage.height * scale) / 2
 
         if (isDark) {
-          // Apply invert filter for dark mode
-          ctx.filter = 'invert(1)'
-          ctx.drawImage(backImage, x, y, backImage.width * scale, backImage.height * scale)
-          ctx.filter = 'none'
+          // Safari-compatible inversion using pixel manipulation
+          const tempCanvas = document.createElement('canvas')
+          tempCanvas.width = backImage.width
+          tempCanvas.height = backImage.height
+          const tempCtx = tempCanvas.getContext('2d')
+
+          if (tempCtx) {
+            // Draw original image to temp canvas
+            tempCtx.drawImage(backImage, 0, 0)
+
+            // Get and invert pixel data
+            const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
+            const data = imageData.data
+
+            for (let i = 0; i < data.length; i += 4) {
+              data[i] = 255 - data[i]       // Invert red
+              data[i + 1] = 255 - data[i + 1] // Invert green
+              data[i + 2] = 255 - data[i + 2] // Invert blue
+              // Keep alpha unchanged
+            }
+
+            tempCtx.putImageData(imageData, 0, 0)
+            ctx.drawImage(tempCanvas, x, y, backImage.width * scale, backImage.height * scale)
+          }
         } else {
           ctx.drawImage(backImage, x, y, backImage.width * scale, backImage.height * scale)
         }
@@ -250,6 +326,7 @@ function App() {
       window.removeEventListener('resize', resize)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('scroll', handlePageScroll)
+      video.removeEventListener('canplaythrough', handleVideoCanPlay)
       cancelAnimationFrame(animationId)
     }
   }, [isDark, windowSize, showGame])
@@ -260,14 +337,48 @@ function App() {
   }, [isDark])
 
   return (
-    <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', margin: 0 }}>
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        loop
-        muted
-        style={{ display: 'none' }}
-      />
+    <>
+      {/* Loading screen overlay */}
+      {isLoading && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: isDark ? '#000' : '#fff',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10000,
+            transition: 'opacity 0.3s ease'
+          }}
+        >
+          <div
+            style={{
+              fontFamily: 'monospace',
+              fontSize: '2rem',
+              color: isDark ? '#0f0' : '#00a',
+              letterSpacing: '0.5rem',
+              textAlign: 'center',
+              textShadow: isDark ? '0 0 10px rgba(0, 255, 0, 0.5)' : '0 0 10px rgba(0, 0, 170, 0.3)'
+            }}
+          >
+            {loadingText}
+          </div>
+        </div>
+      )}
+
+      <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', margin: 0, opacity: isLoading ? 0 : 1, transition: 'opacity 0.3s ease' }}>
+        <video
+          ref={videoRef}
+          src={videoSrc}
+          loop
+          muted
+          style={{ display: 'none' }}
+        />
       <canvas
         ref={canvasRef}
         style={{
@@ -313,6 +424,7 @@ function App() {
 
       <Terminal isDark={isDark} onGameLaunch={() => setShowGame(true)} isGameActive={showGame} />
     </div>
+    </>
   )
 }
 
