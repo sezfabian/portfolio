@@ -125,11 +125,11 @@ export default function Projects({ isDark }: ProjectsProps) {
                     aspectRatio: '4/2.5',
                     backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0',
                     border: `1px solid ${isDark ? '#333' : '#ccc'}`,
-                    overflow: 'hidden',
+                    overflow: 'visible',
                     position: 'relative',
                     borderRadius: '5px',
-                    filter: 'grayscale(70%)'
-
+                    transition: 'all 0.3s ease',
+                    zIndex: 1
                   }}
                 >
                   <img
@@ -138,7 +138,26 @@ export default function Projects({ isDark }: ProjectsProps) {
                     style={{
                       width: '100%',
                       height: '100%',
-                      objectFit: 'cover'
+                      objectFit: 'cover',
+                      filter: 'grayscale(70%)',
+                      transition: 'all 0.3s ease',
+                      borderRadius: '5px',
+                      transformOrigin: 'center'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.filter = 'grayscale(0%)'
+                      e.currentTarget.style.zIndex = '10'
+                      // On larger screens (>1010px), move image left while scaling
+                      if (window.innerWidth > 1010) {
+                        e.currentTarget.style.transform = 'scale(1.5) translateX(-15%)'
+                      } else {
+                        e.currentTarget.style.transform = 'scale(1.5)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.filter = 'grayscale(70%)'
+                      e.currentTarget.style.transform = 'scale(1)'
+                      e.currentTarget.style.zIndex = '1'
                     }}
                   />
                 </div>
