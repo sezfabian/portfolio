@@ -578,8 +578,18 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false }:
   }
 
   const handleTerminalClick = () => {
-    inputRef.current?.focus()
+    // Don't focus input when game is active
+    if (!isGameActive) {
+      inputRef.current?.focus()
+    }
   }
+
+  // Blur input when game becomes active
+  useEffect(() => {
+    if (isGameActive && inputRef.current) {
+      inputRef.current.blur()
+    }
+  }, [isGameActive])
 
   return (
     <div
@@ -639,7 +649,8 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false }:
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          autoFocus
+          autoFocus={!isGameActive}
+          readOnly={isGameActive}
           style={{
             flex: 1,
             background: 'transparent',

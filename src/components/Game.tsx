@@ -7,9 +7,10 @@ import './Game.css'
 interface GameProps {
   isDark: boolean
   onClose: () => void
+  isMobile?: boolean
 }
 
-export default function Game({ isDark, onClose }: GameProps) {
+export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [score, setScore] = useState(0)
   const [highScore, setHighScore] = useState(() => {
@@ -39,6 +40,7 @@ export default function Game({ isDark, onClose }: GameProps) {
 
     // Load and parse GIF frames
     const frames: ImageData[] = []
+    const cachedFrameCanvases: HTMLCanvasElement[] = []
     let framesLoaded = false
 
     fetch(alienGif)
@@ -54,6 +56,39 @@ export default function Game({ isDark, onClose }: GameProps) {
             frame.dims.height
           )
           frames.push(imageData)
+
+          // Pre-render frames to cached canvases for better performance
+          const frameCanvas = document.createElement('canvas')
+          frameCanvas.width = frame.dims.width
+          frameCanvas.height = frame.dims.height
+          const frameCtx = frameCanvas.getContext('2d')
+
+          if (frameCtx) {
+            frameCtx.putImageData(imageData, 0, 0)
+
+            // Pre-apply green brightening in dark mode
+            if (isDarkRef.current) {
+              const imgData = frameCtx.getImageData(0, 0, frameCanvas.width, frameCanvas.height)
+              const data = imgData.data
+
+              for (let i = 0; i < data.length; i += 4) {
+                const r = data[i]
+                const g = data[i + 1]
+                const b = data[i + 2]
+                const alpha = data[i + 3]
+
+                if (alpha > 50 && g > r && g > b) {
+                  data[i] = 0
+                  data[i + 1] = 200
+                  data[i + 2] = 0
+                }
+              }
+
+              frameCtx.putImageData(imgData, 0, 0)
+            }
+          }
+
+          cachedFrameCanvases.push(frameCanvas)
         })
         framesLoaded = true
       })
@@ -101,7 +136,8 @@ export default function Game({ isDark, onClose }: GameProps) {
 
     // Create cityscape background with fixed seed for consistency
     const drawCityscape = () => {
-      const buildingCount = 20
+      // Reduce building count on mobile for better performance
+      const buildingCount = isMobile ? 10 : 20
       const buildings: Array<{ height: number; windows: number[][] }> = []
 
       // Use seeded random for consistent buildings
@@ -117,8 +153,8 @@ export default function Game({ isDark, onClose }: GameProps) {
         const windowCols = 3
         const windows: number[][] = []
 
-        // Reduce window density in dark mode for better performance
-        const windowChance = isDarkRef.current ? 0.65 : 0.3 // 35% vs 70% chance
+        // Reduce window density on mobile and in dark mode for better performance
+        const windowChance = isMobile ? 0.8 : (isDarkRef.current ? 0.65 : 0.3)
 
         for (let row = 0; row < windowRows; row++) {
           for (let col = 0; col < windowCols; col++) {
@@ -357,53 +393,18 @@ export default function Game({ isDark, onClose }: GameProps) {
         ctx.fillRect(0, groundY + 32, canvas.width, 2)
 
         // Draw player (alien) with animated frames
-        if (framesLoaded && frames.length > 0) {
+        if (framesLoaded && cachedFrameCanvases.length > 0) {
           // Only animate when not jumping (pause on jump)
           if (!player.jumping) {
             animationCounter++
             if (animationCounter >= 10) {
-              currentFrame = (currentFrame + 1) % frames.length
+              currentFrame = (currentFrame + 1) % cachedFrameCanvases.length
               animationCounter = 0
             }
           }
 
-          // Create temporary canvas for frame
-          const tempCanvas = document.createElement('canvas')
-          const tempCtx = tempCanvas.getContext('2d')
-          if (tempCtx) {
-            tempCanvas.width = frames[currentFrame].width
-            tempCanvas.height = frames[currentFrame].height
-
-            // Get the frame data
-            const frameData = frames[currentFrame]
-            tempCtx.putImageData(frameData, 0, 0)
-
-            // In dark mode, brighten green pixels
-            if (isDarkRef.current) {
-              const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
-              const data = imageData.data
-
-              for (let i = 0; i < data.length; i += 4) {
-                const r = data[i]
-                const g = data[i + 1]
-                const b = data[i + 2]
-                const alpha = data[i + 3]
-
-                // Only modify pixels that are already green (green > red and green > blue)
-                if (alpha > 50 && g > r && g > b) {
-                  // Brighten the green to maximum
-                  data[i] = 0       // R - keep low
-                  data[i + 1] = 200 // G - max brightness
-                  data[i + 2] = 0   // B - keep low
-                  // Keep original alpha
-                }
-              }
-
-              tempCtx.putImageData(imageData, 0, 0)
-            }
-
-            ctx.drawImage(tempCanvas, player.x, player.y - 50, player.width, player.height)
-          }
+          // Use pre-rendered cached canvas (much faster!)
+          ctx.drawImage(cachedFrameCanvases[currentFrame], player.x, player.y - 50, player.width, player.height)
         }
 
         // Draw obstacles (stacked crates)
@@ -524,7 +525,10 @@ export default function Game({ isDark, onClose }: GameProps) {
       {/* Large touch area for mobile screens */}
       <div
         className="mobile-touch-area"
-        onClick={() => isGameOver ? resetGameRef.current() : jumpTriggerRef.current()}
+        onClick={(e) => {
+          e.preventDefault()
+          isGameOver ? resetGameRef.current() : jumpTriggerRef.current()
+        }}
         style={{
           marginTop: '1rem',
           padding: '2rem',
@@ -537,9 +541,12 @@ export default function Game({ isDark, onClose }: GameProps) {
           fontSize: '1.2rem',
           color: isDark ? '#0f0' : '#00a',
           userSelect: 'none',
-          transition: 'all 0.2s ease'
+          transition: 'all 0.2s ease',
+          WebkitTapHighlightColor: 'transparent',
+          touchAction: 'manipulation'
         }}
         onMouseDown={(e) => {
+          e.preventDefault()
           const target = e.currentTarget
           target.style.transform = 'scale(0.98)'
           target.style.backgroundColor = isDark ? 'rgba(0, 255, 0, 0.2)' : 'rgba(0, 0, 170, 0.2)'

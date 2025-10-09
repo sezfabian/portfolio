@@ -44,6 +44,9 @@ function App() {
     height: window.innerHeight
   })
 
+  // Detect mobile device for performance optimizations
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 1010
+
   // Listen for system theme changes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -193,12 +196,38 @@ function App() {
     window.addEventListener('scroll', handlePageScroll, { passive: true })
     handlePageScroll() // Initial call
 
-    // Load static background image
+    // Load static background image and cache inverted version
     const backImage = new Image()
     backImage.src = backImg
     let backImageLoaded = false
+    let invertedBackImage: HTMLCanvasElement | null = null
+
     backImage.onload = () => {
       backImageLoaded = true
+
+      // Pre-process inverted version for dark mode (cache it)
+      if (isDark) {
+        const tempCanvas = document.createElement('canvas')
+        tempCanvas.width = backImage.width
+        tempCanvas.height = backImage.height
+        const tempCtx = tempCanvas.getContext('2d')
+
+        if (tempCtx) {
+          tempCtx.drawImage(backImage, 0, 0)
+          const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
+          const data = imageData.data
+
+          for (let i = 0; i < data.length; i += 4) {
+            data[i] = 255 - data[i]       // Invert red
+            data[i + 1] = 255 - data[i + 1] // Invert green
+            data[i + 2] = 255 - data[i + 2] // Invert blue
+          }
+
+          tempCtx.putImageData(imageData, 0, 0)
+          invertedBackImage = tempCanvas
+        }
+      }
+
       checkAssetsLoaded()
     }
 
@@ -243,34 +272,9 @@ function App() {
         const x = (canvas.width - backImage.width * scale) / 2
         const y = (canvas.height - backImage.height * scale) / 2
 
-        if (isDark) {
-          // Safari-compatible inversion using pixel manipulation
-          const tempCanvas = document.createElement('canvas')
-          tempCanvas.width = backImage.width
-          tempCanvas.height = backImage.height
-          const tempCtx = tempCanvas.getContext('2d')
-
-          if (tempCtx) {
-            // Draw original image to temp canvas
-            tempCtx.drawImage(backImage, 0, 0)
-
-            // Get and invert pixel data
-            const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
-            const data = imageData.data
-
-            for (let i = 0; i < data.length; i += 4) {
-              data[i] = 255 - data[i]       // Invert red
-              data[i + 1] = 255 - data[i + 1] // Invert green
-              data[i + 2] = 255 - data[i + 2] // Invert blue
-              // Keep alpha unchanged
-            }
-
-            tempCtx.putImageData(imageData, 0, 0)
-            ctx.drawImage(tempCanvas, x, y, backImage.width * scale, backImage.height * scale)
-          }
-        } else {
-          ctx.drawImage(backImage, x, y, backImage.width * scale, backImage.height * scale)
-        }
+        // Use cached inverted image in dark mode for better performance
+        const imageToUse = (isDark && invertedBackImage) ? invertedBackImage : backImage
+        ctx.drawImage(imageToUse, x, y, backImage.width * scale, backImage.height * scale)
       } else if (video.readyState === video.HAVE_ENOUGH_DATA && !showGame) {
         // Render video as ASCII when game is not open
         videoCanvas.width = cols
@@ -418,7 +422,7 @@ function App() {
             <Contact isDark={isDark} />
           </>
         ) : (
-          <Game isDark={isDark} onClose={() => setShowGame(false)} />
+          <Game isDark={isDark} onClose={() => setShowGame(false)} isMobile={isMobile} />
         )}
       </main>
 
