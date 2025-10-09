@@ -413,7 +413,7 @@ function App() {
         isDark={isDark}
       />
 
-      <main style={{ position: 'relative', zIndex: 10 }}>
+      <main style={{ position: 'relative', zIndex: window.innerWidth > 1010 ? 1000 : 10 }}>
         {!showGame ? (
           <>
             <Hero isDark={isDark} />

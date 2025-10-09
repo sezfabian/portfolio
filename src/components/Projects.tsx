@@ -231,7 +231,7 @@ export default function Projects({ isDark }: ProjectsProps) {
                     flexWrap: 'wrap',
                     gap: '0.5rem',
                     alignItems: 'center',
-                    marginTop: '0rem'
+                    marginTop: '-0rem'
                   }}
                 >
                   {project.tech.map((tech, techIndex) => (

@@ -652,7 +652,7 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false }:
         display: 'flex',
         flexDirection: 'column',
         cursor: 'text',
-        zIndex: window.innerWidth > 1010 ? 1 : 100
+        zIndex: 100
       }}
     >
       <div
