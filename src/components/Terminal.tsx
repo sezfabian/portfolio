@@ -436,9 +436,14 @@ Available directories: ${Object.keys(fileSystem).join(', ')}`
       }
 
       if (sectionMap[newDir]) {
-        const element = document.getElementById(sectionMap[newDir])
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        // Special handling for home - scroll to top
+        if (newDir === 'home') {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        } else {
+          const element = document.getElementById(sectionMap[newDir])
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
         }
       }
 
@@ -590,6 +595,41 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false }:
       inputRef.current.blur()
     }
   }, [isGameActive])
+
+  // Update current directory based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'about', 'projects', 'contact']
+      const windowHeight = window.innerHeight
+      const scrollY = window.scrollY
+
+      // Check if at the very top (home)
+      if (scrollY < 100) {
+        setCurrentDir('home')
+        return
+      }
+
+      // Find which section is most visible
+      for (const section of sections) {
+        const element = document.getElementById(section)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          // Check if section is in the top 40% of viewport
+          if (rect.top <= windowHeight * 0.4 && rect.bottom >= 0) {
+            if (currentDir !== section) {
+              setCurrentDir(section)
+            }
+            break
+          }
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll() // Initial check
+
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [currentDir])
 
   return (
     <div
