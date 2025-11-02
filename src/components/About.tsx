@@ -46,7 +46,7 @@ export default function About({ isDark }: AboutProps) {
           }}
         >
           <p style={{ marginBottom: '1.5rem' }}>
-            Full Stack Developer with 5+ years of experience in building scalable and efficient web applications.
+          Software+AI Engineer with  5 years of experience solving problems and building tools that help businesses grow smarter. Significantly contributed in the Training of most of your favourite AI coding assistants.
           </p>
 
           <p style={{ marginBottom: '1.5rem' }}>
