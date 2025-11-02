@@ -6,6 +6,8 @@ interface TerminalProps {
   isDark: boolean
   onGameLaunch: () => void
   isGameActive?: boolean
+  showPDF: boolean
+  setShowPDF: (show: boolean) => void
 }
 
 interface DirectoryStructure {
@@ -457,7 +459,7 @@ Available directories: ${Object.keys(fileSystem).join(', ')}`
   }
 })
 
-export default function Terminal({ isDark, onGameLaunch, isGameActive = false }: TerminalProps) {
+export default function Terminal({ isDark, onGameLaunch, isGameActive = false, showPDF, setShowPDF }: TerminalProps) {
   const [history, setHistory] = useState<{ input: string; output: string }[]>([
     { input: '', output: 'Welcome to my Portfolio Terminal. Type "help" for available commands.\nTry "cd about" or "cd projects" to navigate sections.' }
   ])
@@ -465,7 +467,6 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false }:
   const [currentDir, setCurrentDir] = useState('home')
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
-  const [showPDF, setShowPDF] = useState(false)
   const terminalRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -712,7 +713,7 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false }:
             width: '100vw',
             height: '100vh',
             backgroundColor: isDark ? '#000' : '#fff',
-            zIndex: 1000,
+            zIndex: 10000,
             display: 'flex',
             flexDirection: 'column'
           }}

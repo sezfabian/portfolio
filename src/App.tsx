@@ -37,6 +37,7 @@ function App() {
 
   const [isDark, setIsDark] = useState(getSystemTheme())
   const [showGame, setShowGame] = useState(false)
+  const [showPDF, setShowPDF] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingText, setLoadingText] = useState('DECRYPTING')
   const [windowSize, setWindowSize] = useState({
@@ -421,7 +422,7 @@ function App() {
         pointerEvents: window.innerWidth > 1010 ? 'none' : 'auto'
       }}>
         <div style={{ pointerEvents: 'auto' }}>
-          {!showGame ? (
+          {!showGame && !showPDF ? (
             <>
               <Hero isDark={isDark} />
               <About isDark={isDark} />
@@ -429,12 +430,16 @@ function App() {
               <Contact isDark={isDark} />
             </>
           ) : (
-            <Game isDark={isDark} onClose={() => setShowGame(false)} isMobile={isMobile} />
+            showPDF ? (
+              <></>
+            ) : (
+              <Game isDark={isDark} onClose={() => setShowGame(false)} isMobile={isMobile} />
+            )
           )}
         </div>
       </main>
 
-      <Terminal isDark={isDark} onGameLaunch={() => setShowGame(true)} isGameActive={showGame} />
+      <Terminal isDark={isDark} onGameLaunch={() => setShowGame(true)} isGameActive={showGame} showPDF={showPDF} setShowPDF={setShowPDF} />
     </div>
     </>
   )
