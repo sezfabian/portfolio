@@ -317,7 +317,7 @@ Graphics & Fingerprinting:
   WebGL Vendor: ${data.graphics.webglVendor}
   WebGL Renderer: ${data.graphics.webglRenderer}
 
-  Available Features:
+Available Features:
   Local Storage: ${data.features.localStorage ? 'Yes' : 'No'}
   Session Storage: ${data.features.sessionStorage ? 'Yes' : 'No'}
   IndexedDB: ${data.features.indexedDB ? 'Yes' : 'No'}
@@ -328,7 +328,16 @@ Graphics & Fingerprinting:
 `
       }
 
-      return `What I know about you (Collected in Real-Time):`
+      return `Browser Data Collection & Fingerprinting
+
+Websites can collect extensive data about you without asking permission.
+This includes your IP address, location, browser type, screen size, and more.
+
+Usage:
+  about -me     See what data this website can read about you
+  about --help  Show detailed help
+
+Try: about -me`
     }
   },
   ls: {
