@@ -133,14 +133,17 @@ export default function Projects({ isDark }: ProjectsProps) {
                     aspectRatio: '4/2.8',
                     backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0',
                     border: `1px solid ${isDark ? '#333' : '#ccc'}`,
-                    overflow: window.innerWidth > 1460 ? 'visible' : 'hidden',
+                    overflow: 'hidden',
                     position: 'relative',
                     borderRadius: '5px'
                   }}
-                  onMouseLeave={(e) => {
+                  onMouseEnter={(e) => {
                     if (window.innerWidth > 1060) {
                       e.currentTarget.style.overflow = 'visible'
                     }
+                  }}
+                  onMouseLeave={(e) => {
+                      e.currentTarget.style.overflow = 'hidden'
                   }}
                 >
                   <img
