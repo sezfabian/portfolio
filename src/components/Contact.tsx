@@ -54,15 +54,6 @@ export default function Contact({ isDark }: ContactProps) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <h4 style={{ fontSize: '0.85rem', fontWeight: 300, color: isDark ? '#0f0' : '#00a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-                Location
-              </h4>
-              <p style={{ fontSize: '1rem', color: isDark ? '#fff' : '#000', margin: 0 }}>
-                Stirling, Scotland
-              </p>
-            </div>
-
-            <div>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 300, color: isDark ? '#0f0' : '#00a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
                 Phone
               </h4>
               <a

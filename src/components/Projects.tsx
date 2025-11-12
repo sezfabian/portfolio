@@ -5,6 +5,7 @@ import guntuImg from '../assets/guntu.png'
 import ackImg from '../assets/ack.png'
 import mssaImg from '../assets/mssa.png'
 import cargenImg from '../assets/cargen.png'
+import Glitch from './Glitch'
 
 interface ProjectsProps {
   isDark: boolean
@@ -114,6 +115,7 @@ export default function Projects({ isDark }: ProjectsProps) {
                 borderBottom: index < projects.length - 1 ? `1px solid ${isDark ? '#333' : '#ccc'}` : 'none'
               }}
             >
+              <Glitch glitchOn={['entry', 'hover']} interval={7000} glitchDuration={1000} glitchColors={{color1: '255, 225, 255', color2: '0, 255, 0'}} intensity="high">
               {/* First Row: Image and Description */}
               <div
                 style={{
@@ -129,9 +131,14 @@ export default function Projects({ isDark }: ProjectsProps) {
                     aspectRatio: '4/2.5',
                     backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0',
                     border: `1px solid ${isDark ? '#333' : '#ccc'}`,
-                    overflow: window.innerWidth > 1460 ? 'visible' : 'hidden',
+                    overflow: window.innerWidth > 1860 ? 'visible' : 'hidden',
                     position: 'relative',
                     borderRadius: '5px'
+                  }}
+                  onMouseLeave={(e) => {
+                    if (window.innerWidth <= 1860) {
+                      e.currentTarget.style.overflow = 'hidden'
+                    }
                   }}
                 >
                   <img
@@ -152,7 +159,7 @@ export default function Projects({ isDark }: ProjectsProps) {
                       e.currentTarget.style.filter = 'grayscale(0%)'
                       e.currentTarget.style.zIndex = '101'
                       // On larger screens (>1010px), move image left while scaling
-                      if (window.innerWidth > 1010) {
+                      if (window.innerWidth > 810) {
                         e.currentTarget.style.transform = 'scale(1.5) translateX(-15%)'
                       } else {
                         e.currentTarget.style.transform = 'scale(1.5)'
@@ -250,6 +257,7 @@ export default function Projects({ isDark }: ProjectsProps) {
                   ))}
                 </div>
               </div>
+              </Glitch>
             </div>
           ))}
         </div>
