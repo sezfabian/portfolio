@@ -19,7 +19,8 @@ interface GlitchProps {
   glitchOn?: GlitchTrigger[];
   interval?: number; // interval in milliseconds for 'interval' trigger
   triggerOnce?: boolean;
-  glitchColors?: GlitchColors; // Custom colors for the glitch effect
+  isDark?: boolean; // Theme detection from app (auto-selects colors)
+  glitchColors?: GlitchColors; // Custom colors for the glitch effect (overrides theme)
   className?: string;
 }
 
@@ -32,7 +33,8 @@ const Glitch = ({
   glitchOn = ['entry'],
   interval = 3000,
   triggerOnce = false,
-  glitchColors = { color1: '255, 0, 0', color2: '0, 255, 255' },
+  isDark = true,
+  glitchColors,
   className = '',
 }: GlitchProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -269,12 +271,30 @@ const Glitch = ({
       glitchTimeline.kill();
       gsap.killTweensOf(container);
     };
-  }, [threshold, duration, glitchDuration, intensity, triggerOnce, glitchOn, interval, glitchColors]);
+  }, [threshold, duration, glitchDuration, intensity, triggerOnce, glitchOn, interval, glitchColors, isDark]);
+
+  // Theme-based default colors - automatically selects based on isDark
+  const getDefaultColors = (): GlitchColors => {
+    if (!isDark) {
+      // Light mode: Black and Blue
+      return {
+        color1: '0, 0, 0',      // Black
+        color2: '0, 100, 255',  // Blue
+      };
+    }
+    // Dark mode: Red and Cyan (default)
+    return {
+      color1: '255, 0, 0',    // Red
+      color2: '0, 255, 255',  // Cyan
+    };
+  };
+
+  const defaultColors = getDefaultColors();
 
   // Convert color format and apply to CSS variables
   const containerStyle = {
-    '--glitch-color-1': glitchColors.color1 || '255, 0, 0',
-    '--glitch-color-2': glitchColors.color2 || '0, 255, 255',
+    '--glitch-color-1': glitchColors?.color1 || defaultColors.color1,
+    '--glitch-color-2': glitchColors?.color2 || defaultColors.color2,
   } as React.CSSProperties;
 
   // Hover event handlers

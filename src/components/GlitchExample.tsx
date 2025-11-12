@@ -6,11 +6,19 @@ const GlitchExample = () => {
     <div style={{ padding: '50px', minHeight: '300vh' }}>
       <h1>Glitch Component Examples</h1>
 
-      {/* Glitch on entry only (default) */}
-      <Glitch glitchOn={['entry']}>
+      {/* Dark mode default */}
+      <Glitch glitchOn={['entry']} isDark={true}>
         <div style={{ padding: '20px', background: '#1a1a1a', color: '#fff', marginBottom: '100px' }}>
-          <h2>Entry Glitch Only (Default Colors)</h2>
-          <p>Red and cyan glitch effect</p>
+          <h2>Dark Mode (Red & Cyan)</h2>
+          <p>Auto-detects dark theme colors</p>
+        </div>
+      </Glitch>
+
+      {/* Light mode default */}
+      <Glitch glitchOn={['entry']} isDark={false}>
+        <div style={{ padding: '20px', background: '#f0f0f0', color: '#000', marginBottom: '100px', border: '2px solid #ddd' }}>
+          <h2>Light Mode (Black & Blue)</h2>
+          <p>Auto-detects light theme colors</p>
         </div>
       </Glitch>
 
@@ -30,11 +38,11 @@ const GlitchExample = () => {
         </div>
       </Glitch>
 
-      {/* Interval glitch only (glitches every 3 seconds while in view) */}
-      <Glitch glitchOn={['interval']} interval={3000} intensity="low" glitchDuration={600}>
-        <div style={{ padding: '20px', background: '#16213e', color: '#fff', marginBottom: '100px' }}>
-          <h2>Interval Glitch (Short)</h2>
-          <p>This div will glitch every 3 seconds while in viewport (600ms each)</p>
+      {/* Interval glitch with light theme */}
+      <Glitch glitchOn={['interval']} interval={3000} intensity="low" glitchDuration={600} isDark={false}>
+        <div style={{ padding: '20px', background: '#ffffff', color: '#000', marginBottom: '100px', border: '2px solid #ddd' }}>
+          <h2>Interval Glitch (Light Mode)</h2>
+          <p>Black and blue glitch every 3 seconds (600ms each)</p>
         </div>
       </Glitch>
 
@@ -69,11 +77,11 @@ const GlitchExample = () => {
         </div>
       </Glitch>
 
-      {/* Hover glitch only */}
-      <Glitch glitchOn={['hover']} intensity="high">
-        <div style={{ padding: '20px', background: '#1f4068', color: '#fff', marginBottom: '100px' }}>
-          <h2>Hover to Glitch</h2>
-          <p>This glitch effect triggers when you hover over it</p>
+      {/* Hover glitch with light theme */}
+      <Glitch glitchOn={['hover']} intensity="high" isDark={false}>
+        <div style={{ padding: '20px', background: '#e8f4f8', color: '#000', marginBottom: '100px', border: '2px solid #ddd' }}>
+          <h2>Hover to Glitch (Light Mode)</h2>
+          <p>Black and blue glitch on hover</p>
         </div>
       </Glitch>
 

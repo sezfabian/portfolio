@@ -55,8 +55,8 @@ export default function About({ isDark }: AboutProps) {
             focus on AI and Machine Learning, SaaS, and FinTech.
           </p>
         </div>
-        <Glitch glitchOn={['interval','entry']} interval={10000} glitchDuration={2000} 
-        glitchColors={{color1: '0, 225, 0', color2: '255, 255, 250'}} intensity="high"
+        <Glitch glitchOn={['interval','entry']} interval={10000} glitchDuration={2000} intensity='high'
+        glitchColors={{color1: isDark ? '0, 255, 0' : '0, 0, 0', color2: isDark ? '255, 255, 255' : '0, 0, 170'}}
         >
         <div style={{ marginTop: '3rem' }}>
           <h3

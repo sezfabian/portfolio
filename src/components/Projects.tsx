@@ -115,7 +115,9 @@ export default function Projects({ isDark }: ProjectsProps) {
                 borderBottom: index < projects.length - 1 ? `1px solid ${isDark ? '#333' : '#ccc'}` : 'none'
               }}
             >
-              <Glitch glitchOn={['entry', 'hover']} interval={7000} glitchDuration={1000} glitchColors={{color1: '255, 225, 255', color2: '0, 255, 0'}} intensity="high">
+              <Glitch glitchOn={['entry', 'hover']} interval={7000} glitchDuration={1000} intensity="high"
+              glitchColors={{color1: isDark ? '0, 255, 0' : '0, 0, 0', color2: isDark ? '255, 255, 255' : '0, 0, 170'}}
+              >
               {/* First Row: Image and Description */}
               <div
                 style={{
