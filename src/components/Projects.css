@@ -1,5 +1,17 @@
 /* Minimal Projects Section Styles */
 
+/* Pulse animation for click to expand indicator */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
 /* Responsive adjustments - text sizes only */
 @media (max-width: 1010px) {
   #projects h2 {

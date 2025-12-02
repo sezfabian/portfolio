@@ -1,11 +1,11 @@
 import './Projects.css'
-import trackImg from '../assets/track.png'
+import { useState } from 'react'
+import trackImg from '../assets/farm.png'
 import mikrotikImg from '../assets/mikrotik.png'
 import guntuImg from '../assets/guntu.png'
 import ackImg from '../assets/ack.png'
 import mssaImg from '../assets/mssa.png'
 import cargenImg from '../assets/cargen.png'
-import Glitch from './Glitch'
 
 interface ProjectsProps {
   isDark: boolean
@@ -46,7 +46,7 @@ const projects: Project[] = [
     description: 'A comprehensive charity website for ACK St Marys Munjiti Parish.',
     tech: ['WordPress', 'HTML', 'CSS', 'JavaScript', 'Multi-language Support'],
     image: ackImg,
-    link: 'https://ackstmarysmunjiti.org'
+    link: 'https://ackstmarys.munjitiparish.co.ke/'
   },
   {
     title: 'MASTER-SLAVE SALP SWARM OPTIMIZER',
@@ -65,6 +65,9 @@ const projects: Project[] = [
 ]
 
 export default function Projects({ isDark }: ProjectsProps) {
+  const [expandedCard, setExpandedCard] = useState<number | null>(null)
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
+
   return (
     <section
       id="projects"
@@ -111,39 +114,70 @@ export default function Projects({ isDark }: ProjectsProps) {
             <div
               key={index}
               style={{
-                padding: '2rem 0',
-                borderBottom: index < projects.length - 1 ? `1px solid ${isDark ? '#333' : '#ccc'}` : 'none'
+                padding: '0.5rem 0',
+                marginBottom: index < projects.length - 1 ? '2rem' : '0'
               }}
             >
-              <Glitch glitchOn={['entry', 'hover']} interval={7000} glitchDuration={1000} intensity="high"
-              glitchColors={{color1: isDark ? '0, 255, 0' : '0, 0, 0', color2: isDark ? '255, 255, 255' : '0, 0, 170'}}
-              >
-              {/* First Row: Image and Description */}
               <div
                 style={{
+                  padding: '2rem',
+                  backgroundColor: expandedCard === index ? 'rgba(255, 255, 255, 0.98)' : 'transparent',
+                  borderRadius: '16px',
+                  transition: 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                  transform: expandedCard === index ? 'scale(1.08)' : hoveredCard === index ? 'scale(1.02)' : 'scale(1)',
+                  boxShadow: expandedCard === index
+                    ? (isDark ? '0 30px 80px rgba(0, 255, 0, 0.2), 0 0 0 1px rgba(0, 255, 0, 0.15)' : '0 30px 80px rgba(0, 0, 170, 0.2), 0 0 0 1px rgba(0, 0, 170, 0.15)')
+                    : hoveredCard === index
+                    ? (isDark ? '0 10px 30px rgba(0, 255, 0, 0.1)' : '0 10px 30px rgba(0, 0, 170, 0.1)')
+                    : '0 0 0 rgba(0, 0, 0, 0)',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  zIndex: expandedCard === index ? 10 : 1
+                }}
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
+                onClick={() => setExpandedCard(expandedCard === index ? null : index)}
+              >
+              {/* Click to expand indicator */}
+              {hoveredCard === index && expandedCard !== index && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '1rem',
+                    right: '1rem',
+                    fontSize: '0.75rem',
+                    color: isDark ? '#0f0' : '#00a',
+                    fontFamily: 'monospace',
+                    animation: 'pulse 2s infinite',
+                    opacity: 0.8
+                  }}
+                >
+                  Click to expand ↗
+                </div>
+              )}
+
+              {/* First Row: Image and Description */}
+              <div
+                className="project-grid"
+                style={{
                   display: 'grid',
-                  gridTemplateColumns: window.innerWidth > 1010 ? '1fr 1fr' : '1fr',
-                  gap: '2rem',
-                  marginBottom: '1rem'
+                  gridTemplateColumns: expandedCard === index ? '1fr' : (window.innerWidth > 1010 ? '1fr 1fr' : '1fr'),
+                  gap: expandedCard === index ? '1.5rem' : '2rem',
+                  marginBottom: '1rem',
+                  transition: 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)'
                 }}
               >
                 {/* Image */}
                 <div
+                  className={`project-image-${index}`}
                   style={{
                     aspectRatio: '4/2.8',
-                    backgroundColor: isDark ? '#1a1a1a' : '#f0f0f0',
-                    border: `1px solid ${isDark ? '#333' : '#ccc'}`,
+                    backgroundColor: expandedCard === index ? '#f8f8f8' : (isDark ? '#1a1a1a' : '#f0f0f0'),
+                    border: expandedCard === index ? '1px solid rgba(0, 0, 170, 0.2)' : `1px solid ${isDark ? '#333' : '#ccc'}`,
                     overflow: 'hidden',
                     position: 'relative',
-                    borderRadius: '5px'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (window.innerWidth > 1060) {
-                      e.currentTarget.style.overflow = 'visible'
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                      e.currentTarget.style.overflow = 'hidden'
+                    borderRadius: '12px',
+                    transition: 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)'
                   }}
                 >
                   <img
@@ -153,27 +187,12 @@ export default function Projects({ isDark }: ProjectsProps) {
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
-                      filter: 'grayscale(70%)',
-                      transition: 'all 0.3s ease',
-                      borderRadius: '5px',
+                      filter: expandedCard === index ? 'grayscale(0%)' : 'grayscale(70%)',
+                      transition: 'filter 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                      borderRadius: '12px',
                       transformOrigin: 'center',
                       position: 'relative',
-                      zIndex: 101
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.filter = 'grayscale(0%)'
-                      e.currentTarget.style.zIndex = '101'
-                      // On larger screens (>1010px), move image left while scaling
-                      if (window.innerWidth > 810) {
-                        e.currentTarget.style.transform = 'scale(1.5) translateX(-15%)'
-                      } else {
-                        e.currentTarget.style.transform = 'scale(1.5)'
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.filter = 'grayscale(70%)'
-                      e.currentTarget.style.transform = 'scale(1)'
-                      e.currentTarget.style.zIndex = '100'
+                      transform: 'scale(1)'
                     }}
                   />
                 </div>
@@ -181,24 +200,28 @@ export default function Projects({ isDark }: ProjectsProps) {
                 {/* Title and Description */}
                 <div>
                   <h3
+                    className={`project-title-${index}`}
                     style={{
                       fontSize: '1.5rem',
                       fontWeight: 300,
                       marginBottom: '0.5rem',
                       marginTop: '0rem',
-                      color: isDark ? '#0f0' : '#00a',
-                      letterSpacing: '-0.01em'
+                      color: expandedCard === index ? '#00a' : (isDark ? '#0f0' : '#00a'),
+                      letterSpacing: '-0.01em',
+                      transition: 'color 0.5s ease'
                     }}
                   >
                     {project.title}
                   </h3>
 
                   <p
+                    className={`project-desc-${index}`}
                     style={{
                       fontSize: '0.95rem',
                       lineHeight: '1.6',
-                      color: isDark ? '#ccc' : '#333',
-                      margin: 0
+                      color: expandedCard === index ? '#333' : (isDark ? '#ccc' : '#333'),
+                      margin: 0,
+                      transition: 'color 0.5s ease'
                     }}
                   >
                     {project.description}
@@ -208,34 +231,15 @@ export default function Projects({ isDark }: ProjectsProps) {
 
               {/* Second Row: Tech Stack and View Button */}
               <div
+                className={`project-bottom-${index}`}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
+                  gridTemplateColumns: expandedCard === index ? '1fr' : '1fr 1fr',
                   marginTop: '0.5rem',
-                  gap: '2rem'
+                  gap: expandedCard === index ? '1.5rem' : '2rem',
+                  transition: 'all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1)'
                 }}
               >
-                {/* View Button */}
-                <div>
-                  {project.link && (
-                    <a
-                      href={project.link}
-                      style={{
-                        display: 'inline-block',
-                        color: isDark ? '#0f0' : '#00a',
-                        textDecoration: 'none',
-                        fontSize: '0.85rem',
-                        fontFamily: 'monospace',
-                        transition: 'all 0.2s',
-                        backgroundColor: 'transparent',
-                      }}
-                    >
-                      VIEW PROJECT →
-                    </a>
-                  )}
-                  
-                </div>
-
                 {/* Tech Stack */}
                 <div
                   style={{
@@ -243,26 +247,55 @@ export default function Projects({ isDark }: ProjectsProps) {
                     flexWrap: 'wrap',
                     gap: '0.5rem',
                     alignItems: 'center',
-                    marginTop: '-0rem'
+                    marginTop: '-0rem',
+                    order: window.innerWidth > 1010 ? 2 : 1
                   }}
                 >
                   {project.tech.map((tech, techIndex) => (
                     <span
                       key={techIndex}
+                      className={`project-tech-${index}`}
                       style={{
                         padding: '0.25rem 0.75rem',
-                        border: `1px solid ${isDark ? '#0f0' : '#00a'}`,
-                        color: isDark ? '#0f0' : '#00a',
+                        border: `1px solid ${expandedCard === index ? '#00a' : (isDark ? '#0f0' : '#00a')}`,
+                        color: expandedCard === index ? '#00a' : (isDark ? '#0f0' : '#00a'),
                         fontSize: '0.75rem',
-                        fontFamily: 'monospace'
+                        fontFamily: 'monospace',
+                        transition: 'all 0.5s ease'
                       }}
                     >
                       {tech}
                     </span>
                   ))}
                 </div>
+
+                {/* View Button */}
+                <div
+                  style={{
+                    order: window.innerWidth > 1010 ? 1 : 2
+                  }}
+                >
+                  {project.link && (
+                    <a
+                      href={project.link}
+                      className={`project-link-${index}`}
+                      style={{
+                        display: 'inline-block',
+                        color: expandedCard === index ? '#00a' : (isDark ? '#0f0' : '#00a'),
+                        textDecoration: 'none',
+                        fontSize: '0.85rem',
+                        fontFamily: 'monospace',
+                        transition: 'all 0.5s ease',
+                        backgroundColor: 'transparent',
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      VIEW PROJECT →
+                    </a>
+                  )}
+                </div>
               </div>
-              </Glitch>
+              </div>
             </div>
           ))}
         </div>

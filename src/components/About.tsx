@@ -1,5 +1,4 @@
 import './About.css'
-import Glitch from './Glitch'
 
 interface AboutProps {
   isDark: boolean
@@ -55,9 +54,6 @@ export default function About({ isDark }: AboutProps) {
             focus on AI and Machine Learning, SaaS, and FinTech.
           </p>
         </div>
-        <Glitch glitchOn={['interval','entry']} interval={10000} glitchDuration={2000} intensity='high'
-        glitchColors={{color1: isDark ? '0, 255, 0' : '0, 0, 0', color2: isDark ? '255, 255, 255' : '0, 0, 170'}}
-        >
         <div style={{ marginTop: '3rem' }}>
           <h3
             style={{
@@ -220,7 +216,6 @@ export default function About({ isDark }: AboutProps) {
             </div>
           </div>
         </div>
-        </Glitch>
       </div>
     </section>
   )

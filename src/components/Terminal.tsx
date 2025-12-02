@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import './Terminal.css'
 import cvPdf from '../assets/cv.pdf'
+import Glitch from './Glitch'
 
 interface TerminalProps {
   isDark: boolean
@@ -666,13 +667,23 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
       }}
     >
       <div
-        ref={terminalRef}
         style={{
           flex: 1,
-          overflowY: 'auto',
-          marginBottom: '0.5rem'
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: 0
         }}
       >
+        <Glitch glitchOn={['hover']} interval={7000} glitchDuration={1000} intensity="high"
+        glitchColors={{color1: isDark ? '0, 255, 0' : '0, 0, 0', color2: isDark ? '255, 255, 255' : '0, 0, 170'}} >
+        <div
+          ref={terminalRef}
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            marginBottom: '0.5rem'
+          }}
+        >
         {history.map((item, idx) => (
           <div key={idx}>
             {item.input && <div style={{ color: isDark ? '#0f0' : '#00a' }}>{item.input}</div>}
@@ -687,6 +698,8 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
             )}
           </div>
         ))}
+        </div>
+        </Glitch>
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center' }}>
@@ -712,7 +725,6 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
           }}
         />
       </form>
-
       {showPDF && (
         <div
           style={{

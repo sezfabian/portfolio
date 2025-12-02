@@ -63,7 +63,7 @@ export default function Hero({ isDark }: HeroProps) {
 
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '3rem', position: 'relative' }}>
-        <Glitch glitchOn={['interval','entry']} interval={5000} glitchDuration={2000} isDark={isDark}
+        <Glitch glitchOn={['interval','entry', 'hover']} interval={Math.random() * 5000} glitchDuration={Math.random() * 2000} isDark={isDark}
         glitchColors={{color1: isDark ? '0, 255, 0' : '0, 0, 0', color2: isDark ? '255, 255, 255' : '0, 0, 170'}} intensity="high"
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '3rem', position: 'relative', cursor: 'pointer' }}>
