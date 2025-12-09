@@ -1,15 +1,15 @@
-/* Large screens - keep terminal in left half */
+/* Large screens - keep terminal in left half (only when not maximized) */
 @media (min-width: 1201px) {
-  .terminal-wrapper {
+  .terminal-wrapper:not(.terminal-maximized) {
     width: 40% !important;
     max-width: calc(50vw) !important;
     left: 2rem !important;
   }
 }
 
-/* Small screens - below 1010px */
+/* Small screens - below 1010px (only when not maximized) */
 @media (max-width: 1010px) {
-  .terminal-wrapper {
+  .terminal-wrapper:not(.terminal-maximized) {
     bottom: 0.5rem !important;
     left: 0.5rem !important;
     right: 2rem !important;
@@ -25,7 +25,7 @@
   }
 
   /* Hide terminal when game is active on small screens */
-  .terminal-wrapper.game-active {
+  .terminal-wrapper.game-active:not(.terminal-maximized) {
     opacity: 0 !important;
     transform: translateY(100%) !important;
     pointer-events: none !important;
@@ -33,7 +33,7 @@
 
   /* Hide terminal when near bottom of page */
   @supports (animation-timeline: scroll()) {
-    .terminal-wrapper {
+    .terminal-wrapper:not(.terminal-maximized) {
       animation: hide-terminal-mobile linear;
       animation-timeline: scroll();
       animation-range: 80% 100%;
@@ -48,19 +48,19 @@
     }
   }
 
-  .terminal-wrapper .terminal-output {
+  .terminal-wrapper:not(.terminal-maximized) .terminal-output {
     font-size: 10px !important;
     max-height: 120px !important;
   }
 
-  .terminal-wrapper input {
+  .terminal-wrapper:not(.terminal-maximized) input {
     font-size: 10px !important;
   }
 }
 
-/* Medium to large screens - above 1010px */
+/* Medium to large screens - above 1010px (only when not maximized) */
 @media (min-width: 1011px) and (max-width: 1200px) {
-  .terminal-wrapper {
+  .terminal-wrapper:not(.terminal-maximized) {
     width: 45% !important;
     max-width: 500px !important;
     height: 300px !important;
@@ -69,12 +69,12 @@
     font-size: 12px !important;
   }
 
-  .terminal-wrapper .terminal-output {
+  .terminal-wrapper:not(.terminal-maximized) .terminal-output {
     font-size: 12px !important;
     max-height: 200px !important;
   }
 
-  .terminal-wrapper input {
+  .terminal-wrapper:not(.terminal-maximized) input {
     font-size: 12px !important;
   }
 }

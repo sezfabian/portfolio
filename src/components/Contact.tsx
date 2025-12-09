@@ -30,6 +30,8 @@ export default function Contact({ isDark }: ContactProps) {
             fontSize: '2.5rem',
             fontWeight: 300,
             marginBottom: '2rem',
+            paddingBottom: '1rem',
+            borderBottom: `1px solid ${isDark ? '#333' : '#ccc'}`,
             color: isDark ? '#0f0' : '#00a',
             letterSpacing: '-0.02em'
           }}
@@ -52,6 +54,21 @@ export default function Contact({ isDark }: ContactProps) {
 
         <div style={{ marginTop: '3rem' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: 300, color: isDark ? '#0f0' : '#00a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+                Location
+              </h4>
+              <p
+                style={{
+                  fontSize: '1rem',
+                  color: isDark ? '#fff' : '#000',
+                  margin: 0
+                }}
+              >
+                Stirling, Scotland
+              </p>
+            </div>
+
             <div>
               <h4 style={{ fontSize: '0.85rem', fontWeight: 300, color: isDark ? '#0f0' : '#00a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
                 Phone

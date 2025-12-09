@@ -96,6 +96,8 @@ export default function Projects({ isDark }: ProjectsProps) {
             fontSize: '2.5rem',
             fontWeight: 300,
             marginBottom: '3rem',
+            paddingBottom: '1rem',
+            borderBottom: `1px solid ${isDark ? '#333' : '#ccc'}`,
             color: isDark ? '#0f0' : '#00a',
             letterSpacing: '-0.02em'
           }}

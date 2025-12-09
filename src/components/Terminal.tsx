@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import './Terminal.css'
-import cvPdf from '../assets/cv.pdf'
+import cvPdf from '../assets/Fabian_Cheruiyot_CV_2026.pdf'
 import Glitch from './Glitch'
 
 interface TerminalProps {
@@ -9,6 +9,10 @@ interface TerminalProps {
   isGameActive?: boolean
   showPDF: boolean
   setShowPDF: (show: boolean) => void
+  isMaximized: boolean
+  setIsMaximized: (maximized: boolean) => void
+  isMinimized: boolean
+  setIsMinimized: (minimized: boolean) => void
 }
 
 interface DirectoryStructure {
@@ -16,9 +20,10 @@ interface DirectoryStructure {
 }
 
 const fileSystem: DirectoryStructure = {
-  home: ['about', 'projects', 'contact', 'cv.pdf'],
+  home: ['about', 'projects', 'education', 'contact', 'cv.pdf'],
   about: ['skills', 'experience.txt', 'bio.txt'],
   projects: ['project1.md', 'project2.md', 'project3.md'],
+  education: ['degrees.txt', 'certifications.txt'],
   skills: ['frontend.txt', 'backend.txt', 'tools.txt'],
   contact: ['info.txt']
 }
@@ -204,6 +209,27 @@ Examples:
         return 'Error: PDF viewer not available'
       }
 
+      if (filename === 'degrees.txt') {
+        return `EDUCATION
+
+Master of Science in Advanced Computing with Artificial Intelligence
+University of Stirling | Stirling, Scotland | 2026
+Focus: AI Engineering, Machine Learning, Deep Learning, Natural Language Processing
+
+Bachelor of Science in Electrical and Electronics Engineering
+University of Nairobi | Nairobi, Kenya | 2022`
+      }
+
+      if (filename === 'certifications.txt') {
+        return `CERTIFICATIONS
+
+AWS Cloud Practitioner
+Amazon Web Services
+
+ALX - Holberton School, Full-Stack Software Engineer
+12-month intensive program covering system design, algorithms, and full-stack development`
+      }
+
       if (filename === 'info.txt') {
         return `CONTACT INFORMATION
 
@@ -218,30 +244,32 @@ Feel free to reach out for collaborations, opportunities, or just to connect!`
       }
 
       if (filename === 'experience.txt') {
-        return `AI Trainer & Code Evaluator | Scale AI | Remote | August 2024 - Present
-• Contributing to OpenAI's SWE-Lancer and SWE-Bench Verified benchmarks
-• Assessing AI-generated code quality in Python, JavaScript, Vue3, React, TypeScript, SQL
-• Training AI Agents to improve logic and efficiency in computing tasks
-• Developing comprehensive tests and structured rubrics for AI training
-• Built in-house web application for gamifying training and onboarding
+        return `Software Engineer, AI Training | Pareto AI | Stanford, California | January 2024 - August 2025
+• Critically assessed algorithmic quality and functional integrity of AI-generated code
+• Instrumental in boosting LLM accuracy in competitive programming from 30% to over 90% within one year
+• Engineered and standardized structured rubrics and comprehensive training pathways for AI models
+• Designed and developed in-house tools (AWS+FastAPI+React/Vue) optimizing contributor workflows
+• Built gamified training/onboarding system and utilities for tracking tasks and managing submissions
+• Recognized for exceptional quality and volume of AI training contributions
 
-Full-Stack Software Engineer | Emmerce Ltd | Nairobi, Kenya | Nov 2023 - Jul 2024
-• Led problem definition, software solutions architecting, and project execution
-• Implemented secure, scalable backend solutions using Django and FastAPI microservices
-• Developed responsive SaaS web-apps and dashboards using Vue.js and Vuetify
-• Collaborated with mobile teams to enhance native app functionality with AI integration
+Full-Stack Software Engineer | Emmerce Ltd | Nairobi, Kenya | November 2023 - July 2024
+• Defined and Led technical strategy, problem definition, and system architecture design for E-commerce and SaaS projects
+• Engineered secure, scalable backend solutions (PostgreSQL, Django, FastAPI, Redis, REST APIs)
+• Integrated critical third-party APIs: e-commerce (Amazon, Jumia), payments (Stripe, Mpesa, PesaPal), marketing (Brevo), ERP (SAPS)
+• Designed responsive SaaS web-apps and dashboards in VueJS with focus on functionality and user experience
+• Applied Test-Driven Development (TDD) with Pytest and comprehensive documentation (MkDocs)
 
-Full-Stack Engineering Apprentice | ALX Africa | Remote | Oct 2022 - Oct 2023
-• Completed 12-month rigorous program focused on programming and design principles
-• Built multiple projects: Freelance Platform API, e-commerce web-app, Airbnb clone
-• Developed custom C library and shell programs
-• Strengthened leadership, communication, teamwork, and problem-solving skills
+Software Engineering Apprentice | ALX Africa | Nairobi, Kenya | October 2022 - October 2023
+• Selected for rigorous 12-month program focusing on System Design, Data Structures & Algorithms
+• Collaborated to build and deploy prototypes with founders under ALX Founders Program
+• Developed custom C library and shell programs showcasing low-level systems expertise
+• Cultivated leadership and soft skills through collaborative remote work with peers and mentors
 
-IT Support Specialist | Value Chain Supplies | Eldoret, Kenya | Feb 2020 - Apr 2023
-• Cut costs by 20% through strategic acquisition and maintenance of management systems
-• Increased sales by 10% by developing e-commerce platform and online presence
-• Provided technical support to 100+ users, resolving hardware, software, network issues
-• Implemented remote access system via VPN, reducing response time`
+Technical Assistant Manager & IT Systems Specialist | Value Chain Supplies | Eldoret, Kenya | February 2020 - April 2023
+• Achieved 20% cost reduction by managing acquisition and maintenance of Retail Management Systems
+• Developed e-commerce platform driving over 10% annual revenue growth
+• Managed IT infrastructure and provided rapid technical support, minimizing downtime
+• Led marketing campaigns contributing to 60% revenue growth in two years`
       }
 
       return `cat: ${filename}: No such file or directory`
@@ -406,6 +434,7 @@ Options:
 Examples:
   cd projects     Change to projects directory
   cd about        Change to about directory
+  cd education    Change to education directory
   cd home         Change to home directory
 
 Available directories: ${Object.keys(fileSystem).join(', ')}`
@@ -424,6 +453,7 @@ Available directories: ${Object.keys(fileSystem).join(', ')}`
         const parentMap: { [key: string]: string } = {
           'about': 'home',
           'projects': 'home',
+          'education': 'home',
           'contact': 'home',
           'skills': 'about',
           'home': 'home'
@@ -444,6 +474,7 @@ Available directories: ${Object.keys(fileSystem).join(', ')}`
         'home': 'home',
         'about': 'about',
         'projects': 'projects',
+        'education': 'education',
         'contact': 'contact'
       }
 
@@ -469,7 +500,7 @@ Available directories: ${Object.keys(fileSystem).join(', ')}`
   }
 })
 
-export default function Terminal({ isDark, onGameLaunch, isGameActive = false, showPDF, setShowPDF }: TerminalProps) {
+export default function Terminal({ isDark, onGameLaunch, isGameActive = false, showPDF, setShowPDF, isMaximized, setIsMaximized, isMinimized, setIsMinimized }: TerminalProps) {
   const [history, setHistory] = useState<{ input: string; output: string }[]>([
     { input: '', output: 'Welcome to my Portfolio Terminal. Type "help" for available commands.\nTry "cd about" or "cd projects" to navigate sections.' }
   ])
@@ -610,7 +641,7 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
   // Update current directory based on scroll position
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'about', 'projects', 'contact']
+      const sections = ['home', 'about', 'projects', 'education', 'contact']
       const windowHeight = window.innerHeight
       const scrollY = window.scrollY
 
@@ -642,19 +673,68 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
     return () => window.removeEventListener('scroll', handleScroll)
   }, [currentDir])
 
+  const handleMaximize = () => {
+    setIsMaximized(!isMaximized)
+    if (isMinimized) setIsMinimized(false)
+  }
+
+  const handleMinimize = () => {
+    setIsMinimized(!isMinimized)
+    if (isMaximized) setIsMaximized(false)
+  }
+
+  if (isMinimized) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '2rem',
+          left: '2rem',
+          width: '200px',
+          height: '50px',
+          backgroundColor: window.innerWidth > 1010
+            ? (isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)')
+            : (isDark ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)'),
+          backdropFilter: window.innerWidth > 1010 ? 'blur(10px)' : 'none',
+          border: `1px solid ${isDark ? '#333' : '#ccc'}`,
+          borderRadius: '8px',
+          padding: '0.75rem 1rem',
+          fontFamily: 'monospace',
+          fontSize: '14px',
+          color: isDark ? '#0f0' : '#000',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer',
+          zIndex: 10000
+        }}
+        onClick={handleMinimize}
+      >
+        <span>Terminal</span>
+        <span style={{ fontSize: '1.2rem' }}>⤢</span>
+      </div>
+    )
+  }
+
   return (
     <div
       onClick={handleTerminalClick}
-      className={`terminal-wrapper ${isGameActive ? 'game-active' : ''}`}
+      className={`terminal-wrapper ${isGameActive ? 'game-active' : ''} ${isMaximized ? 'terminal-maximized' : ''}`}
       style={{
         position: 'fixed',
+        top: isMaximized ? '2rem' : 'auto',
         bottom: '2rem',
         left: '2rem',
-        width: '600px',
-        height: '400px',
-        backgroundColor: isDark ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+        right: isMaximized ? '2rem' : 'auto',
+        width: isMaximized ? 'auto' : '600px',
+        height: isMaximized ? 'auto' : '400px',
+        maxWidth: isMaximized ? 'none' : '600px',
+        backgroundColor: window.innerWidth > 1010
+          ? (isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)')
+          : (isDark ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)'),
+        backdropFilter: window.innerWidth > 1010 ? 'blur(10px)' : 'none',
         border: `1px solid ${isDark ? '#333' : '#ccc'}`,
-        borderRadius: '8px',
+        borderRadius: isMaximized ? '0' : '8px',
         padding: '1rem',
         fontFamily: 'monospace',
         fontSize: '14px',
@@ -663,15 +743,66 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
         display: 'flex',
         flexDirection: 'column',
         cursor: 'text',
-        zIndex: 100
+        zIndex: isMaximized ? 10000 : 100,
+        transition: 'all 0.3s ease'
       }}
     >
+      {/* Control buttons */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '0.5rem',
+          marginBottom: '0.5rem',
+          paddingBottom: '0.5rem',
+          borderBottom: `1px solid ${isDark ? '#333' : '#ccc'}`
+        }}
+      >
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            handleMinimize()
+          }}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: isDark ? '#0f0' : '#00a',
+            fontSize: '1.2rem',
+            cursor: 'pointer',
+            padding: '0.25rem 0.5rem',
+            lineHeight: 1
+          }}
+          title="Minimize"
+        >
+          −
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            handleMaximize()
+          }}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: isDark ? '#0f0' : '#00a',
+            fontSize: '1.2rem',
+            cursor: 'pointer',
+            padding: '0.25rem 0.5rem',
+            lineHeight: 1
+          }}
+          title={isMaximized ? 'Restore' : 'Maximize'}
+        >
+          {isMaximized ? '⤡' : '⤢'}
+        </button>
+      </div>
+
       <div
         style={{
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          minHeight: 0
+          minHeight: 0,
+          background: 'transparent'
         }}
       >
         <Glitch glitchOn={['hover']} interval={7000} glitchDuration={1000} intensity="high"
@@ -681,7 +812,8 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
           style={{
             flex: 1,
             overflowY: 'auto',
-            marginBottom: '0.5rem'
+            marginBottom: '0.5rem',
+            background: 'transparent'
           }}
         >
         {history.map((item, idx) => (
@@ -691,7 +823,8 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
               <div style={{
                 whiteSpace: 'pre-wrap',
                 marginBottom: '0.5rem',
-                color: isDark ? '#0f0' : '#000'
+                color: isDark ? '#0f0' : '#000',
+                background: 'transparent'
               }}>
                 {item.output}
               </div>
@@ -702,7 +835,13 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
         </Glitch>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center' }}>
+      <form onSubmit={handleSubmit} style={{
+        display: 'flex',
+        alignItems: 'center',
+        background: 'transparent',
+        margin: 0,
+        padding: 0
+      }}>
         <span style={{ marginRight: '0.5rem', color: isDark ? '#0f0' : '#00a' }}>
           {currentDir}$
         </span>
@@ -717,11 +856,13 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
           style={{
             flex: 1,
             background: 'transparent',
+            backgroundColor: 'transparent',
             border: 'none',
             outline: 'none',
             color: isDark ? '#0f0' : '#000',
             fontFamily: 'monospace',
-            fontSize: '14px'
+            fontSize: '14px',
+            WebkitAppearance: 'none'
           }}
         />
       </form>

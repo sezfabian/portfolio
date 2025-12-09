@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
-import videoSrc from './assets/back.mov'
+import videoSrc from './assets/back.mp4'
 import backImg from './assets/back.png'
 import Terminal from './components/Terminal'
 import Hero from './components/Hero'
 import Game from './components/Game'
 import About from './components/About'
 import Projects from './components/Projects'
+import Education from './components/Education'
 import Contact from './components/Contact'
 import StaggeredMenu from './components/StaggeredMenu'
 import fabLogo from './assets/fab.png'
@@ -15,6 +16,7 @@ const menuItems = [
   { label: 'Home', ariaLabel: 'Go to home page', link: '#home' },
   { label: 'About', ariaLabel: 'Learn about me', link: '#about' },
   { label: 'Projects', ariaLabel: 'View my projects', link: '#projects' },
+  { label: 'Education', ariaLabel: 'View my education', link: '#education' },
   { label: 'Contact', ariaLabel: 'Get in touch', link: '#contact' }
 ];
 
@@ -40,6 +42,9 @@ function App() {
   const [showPDF, setShowPDF] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingText, setLoadingText] = useState('DECRYPTING')
+  const [isTerminalMaximized, setIsTerminalMaximized] = useState(false)
+  const [isTerminalMinimized, setIsTerminalMinimized] = useState(false)
+  const [videoSpeed, setVideoSpeed] = useState(1)
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight
@@ -150,13 +155,13 @@ function App() {
         const scrollProgress = window.scrollY / maxScroll
 
         // Map scroll progress to zoom (3 at top, 2 at bottom)
-        const newZoom = 3 - (scrollProgress * 2)
-        const clampedZoom = Math.max(2, Math.min(3, newZoom))
+        const newZoom = 1.2 - (scrollProgress * 1)
+        const clampedZoom = Math.max(1.2, Math.min(1.2, newZoom))
 
         zoomRef.current = clampedZoom
 
         // Update URL hash based on visible section
-        const sections = ['home', 'about', 'projects', 'contact']
+        const sections = ['home', 'about', 'projects', 'education', 'contact']
         let currentSection = 'home'
 
         for (const section of sections) {
@@ -247,6 +252,9 @@ function App() {
 
     video.addEventListener('canplaythrough', handleVideoCanPlay)
 
+    // Set video playback speed
+    video.playbackRate = videoSpeed
+
     // Play video only when game is not active
     if (!showGame) {
       video.play()
@@ -268,7 +276,7 @@ function App() {
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
         // Calculate aspect ratio and draw the image to cover and stretch beyond the canvas
-        const stretchFactor = 1.3 // Stretch 30% beyond frame
+        const stretchFactor = 1.2 // Stretch 30% beyond frame
         const scale = Math.max(canvas.width / backImage.width, canvas.height / backImage.height) * stretchFactor
         const x = (canvas.width - backImage.width * scale) / 2
         const y = (canvas.height - backImage.height * scale) / 2
@@ -310,10 +318,14 @@ function App() {
             const char = chars[charIndex]
 
             if (isDark) {
-              ctx.fillStyle = `rgba(${brightness}, ${brightness * 0.8}, ${brightness * 0.6}, 0.8)`
+              // Green color for dark mode
+              const green = brightness * 0.7
+              ctx.fillStyle = `rgba(0, ${green}, 0, 0.55)`
             } else {
+              // Grayscale for light mode
               const inverted = 255 - brightness
-              ctx.fillStyle = `rgba(${inverted * 0.4}, ${inverted * 0.3}, ${inverted * 0.5}, 0.8)`
+              const gray = inverted * 0.6
+              ctx.fillStyle = `rgba(${gray}, ${gray}, ${gray}, 0.55)`
             }
             ctx.fillText(char, x, y)
           }
@@ -334,7 +346,7 @@ function App() {
       video.removeEventListener('canplaythrough', handleVideoCanPlay)
       cancelAnimationFrame(animationId)
     }
-  }, [isDark, windowSize, showGame])
+  }, [isDark, windowSize, showGame, videoSpeed])
 
   // Set CSS variable on root for gradients
   useEffect(() => {
@@ -412,34 +424,58 @@ function App() {
         isFixed={true}
         onThemeToggle={() => setIsDark(!isDark)}
         isDark={isDark}
+        videoSpeed={videoSpeed}
+        onVideoSpeedChange={setVideoSpeed}
       />
 
       <main style={{
         position: 'relative',
         zIndex: window.innerWidth > 1010 ? 200 : 10,
-        width: window.innerWidth > 1010 ? '50%' : '100%',
-        marginLeft: window.innerWidth > 1010 ? '50%' : '0',
-        pointerEvents: window.innerWidth > 1010 ? 'none' : 'auto'
+        width: (window.innerWidth > 1010 && !isTerminalMinimized && !isTerminalMaximized) ? '50%' : '100%',
+        marginLeft: (window.innerWidth > 1010 && !isTerminalMinimized && !isTerminalMaximized) ? '50%' : '0',
+        pointerEvents: (window.innerWidth > 1010 && !isTerminalMinimized && !isTerminalMaximized) ? 'none' : 'auto',
+        display: isTerminalMaximized ? 'none' : 'block'
       }}>
         <div style={{ pointerEvents: 'auto' }}>
-          {!showGame && !showPDF ? (
-            <>
-              <Hero isDark={isDark} />
-              <About isDark={isDark} />
-              <Projects isDark={isDark} />
-              <Contact isDark={isDark} />
-            </>
-          ) : (
-            showPDF ? (
-              <></>
+          <div style={{
+            maxWidth: isTerminalMinimized ? '1200px' : 'none',
+            margin: isTerminalMinimized ? '0 auto' : '0',
+            width: '100%'
+          }}>
+            {!showGame && !showPDF && !isTerminalMaximized ? (
+              <>
+                <Hero isDark={isDark} />
+                <About isDark={isDark} />
+                <Projects isDark={isDark} />
+                <Education isDark={isDark} />
+                <Contact isDark={isDark} />
+              </>
             ) : (
-              <Game isDark={isDark} onClose={() => setShowGame(false)} isMobile={isMobile} />
-            )
-          )}
+              showPDF ? (
+                <></>
+              ) : (
+                showGame ? (
+                  <Game isDark={isDark} onClose={() => setShowGame(false)} isMobile={isMobile} />
+                ) : (
+                  <></>
+                )
+              )
+            )}
+          </div>
         </div>
       </main>
 
-      <Terminal isDark={isDark} onGameLaunch={() => setShowGame(true)} isGameActive={showGame} showPDF={showPDF} setShowPDF={setShowPDF} />
+      <Terminal
+        isDark={isDark}
+        onGameLaunch={() => setShowGame(true)}
+        isGameActive={showGame}
+        showPDF={showPDF}
+        setShowPDF={setShowPDF}
+        isMaximized={isTerminalMaximized}
+        setIsMaximized={setIsTerminalMaximized}
+        isMinimized={isTerminalMinimized}
+        setIsMinimized={setIsTerminalMinimized}
+      />
     </div>
     </>
   )

@@ -31,6 +31,8 @@ export interface StaggeredMenuProps {
   isFixed?: boolean;
   onThemeToggle?: () => void;
   isDark?: boolean;
+  videoSpeed?: number;
+  onVideoSpeedChange?: (speed: number) => void;
 }
 
 export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
@@ -48,10 +50,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   isFixed = false,
   onMenuOpen,
   onMenuClose,
+  videoSpeed = 1,
+  onVideoSpeedChange,
   onThemeToggle,
   isDark = true
 }: StaggeredMenuProps) => {
   const [open, setOpen] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const openRef = useRef(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const preLayersRef = useRef<HTMLDivElement | null>(null);
@@ -64,6 +69,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   const [textLines, setTextLines] = useState<string[]>(['Menu', 'Close']);
 
   const openTlRef = useRef<gsap.core.Timeline | null>(null);
+
+  // Track window width for responsive speed control
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const closeTweenRef = useRef<gsap.core.Tween | null>(null);
   const spinTweenRef = useRef<gsap.core.Tween | null>(null);
   const textCycleAnimRef = useRef<gsap.core.Tween | null>(null);
@@ -395,10 +407,90 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ background: c }} />);
         })()}
       </div>
-      <header className="staggered-menu-header" aria-label="Main navigation header">
+      <header className="staggered-menu-header" aria-label="Main navigation header" style={{ position: 'relative' }}>
         <div className="sm-logo" aria-label="Logo">
-          <h2 style={{ margin: 0, fontSize: '2.0rem', fontWeight: '600', color: isDark ? '#fff' : '#000', fontFamily: "'Source Code Pro', monospace" }}>@sezfabian</h2>
+          <a
+            href="https://github.com/sezfabian"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer'
+            }}
+          >
+            <h2 style={{ margin: 0, fontSize: '2.0rem', fontWeight: '600', color: isDark ? '#fff' : '#000', fontFamily: "'Source Code Pro', monospace", transition: 'opacity 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>@sezfabian</h2>
+          </a>
         </div>
+
+        {/* Centered Speed Control */}
+        {onVideoSpeedChange && (
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontFamily: 'monospace',
+            fontSize: '0.85rem',
+            color: isDark ? '#fff' : '#000'
+          }}>
+            {windowWidth > 768 ? (
+              <>
+                <span style={{ fontSize: '0.75rem' }}>Speed:</span>
+                <input
+                  type="range"
+                  min="0.25"
+                  max="2"
+                  step="0.25"
+                  value={videoSpeed}
+                  onChange={(e) => onVideoSpeedChange(parseFloat(e.target.value))}
+                  style={{
+                    width: '80px',
+                    cursor: 'pointer'
+                  }}
+                />
+                <span style={{ fontSize: '0.75rem', minWidth: '2rem' }}>{videoSpeed}x</span>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => onVideoSpeedChange(Math.max(0.25, videoSpeed - 0.25))}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: isDark ? '#fff' : '#000',
+                    fontSize: '1.2rem',
+                    cursor: 'pointer',
+                    padding: '0.25rem',
+                    lineHeight: 1
+                  }}
+                  aria-label="Decrease speed"
+                >
+                  −
+                </button>
+                <span style={{ fontSize: '0.75rem', minWidth: '2.5rem', textAlign: 'center' }}>{videoSpeed}x</span>
+                <button
+                  onClick={() => onVideoSpeedChange(Math.min(2, videoSpeed + 0.25))}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: isDark ? '#fff' : '#000',
+                    fontSize: '1.2rem',
+                    cursor: 'pointer',
+                    padding: '0.25rem',
+                    lineHeight: 1
+                  }}
+                  aria-label="Increase speed"
+                >
+                  +
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
           {onThemeToggle && (
             <button

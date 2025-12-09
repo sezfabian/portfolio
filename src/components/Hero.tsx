@@ -1,7 +1,7 @@
 import './Hero.css'
 import Glitch from './Glitch'
 import GlitchText from './GlitchText';
-import cvPdf from '../assets/cv.pdf'
+import cvPdf from '../assets/Fabian_Cheruiyot_CV_2026.pdf'
 
 interface HeroProps {
   isDark: boolean
@@ -58,12 +58,12 @@ export default function Hero({ isDark }: HeroProps) {
             fontFamily: "'Source Code Pro', monospace"
           }}
         >
-          Want to know me better? Expore the terminal or...
+          Want to know me better? Explore the terminal or...
         </p>
 
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '3rem', position: 'relative' }}>
-        <Glitch glitchOn={['interval','entry', 'hover']} interval={Math.random() * 5000} glitchDuration={Math.random() * 2000} isDark={isDark}
+        <Glitch glitchOn={['interval','entry', 'hover']} interval={Math.random() * 10000} glitchDuration={Math.random() * 2000} isDark={isDark}
         glitchColors={{color1: isDark ? '0, 255, 0' : '0, 0, 0', color2: isDark ? '255, 255, 255' : '0, 0, 170'}} intensity="high"
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '3rem', position: 'relative', cursor: 'pointer' }}>

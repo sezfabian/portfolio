@@ -31,6 +31,8 @@ export default function About({ isDark }: AboutProps) {
             fontSize: '2.5rem',
             fontWeight: 300,
             marginBottom: '2rem',
+            paddingBottom: '1rem',
+            borderBottom: `1px solid ${isDark ? '#333' : '#ccc'}`,
             color: isDark ? '#0f0' : '#00a',
             letterSpacing: '-0.02em'
           }}
@@ -46,12 +48,15 @@ export default function About({ isDark }: AboutProps) {
           }}
         >
           <p style={{ marginBottom: '1.5rem' }}>
-          Software+AI Engineer with  5 years of experience solving problems and building tools that help businesses grow smarter. Significantly contributed in the Training of most of your favourite AI coding assistants.
+            AI Engineering Specialist (Master's track) with 4+ years as a Software Engineer, specializing in the systemic design and architecture of scalable full-stack solutions. Currently pursuing MSc in Advanced Computing with Artificial Intelligence at the University of Stirling (2026).
           </p>
 
           <p style={{ marginBottom: '1.5rem' }}>
-            Prolific Software Engineer, Learner & Researcher with a focus on
-            focus on AI and Machine Learning, SaaS, and FinTech.
+            Proven ability to build, optimize, and grow business operations through technology, with experience collaborating with leading AI labs to optimize Large Language Models (LLMs) for software engineering tasks. Instrumental in boosting LLM accuracy in competitive programming from 30% to over 90% within one year.
+          </p>
+
+          <p style={{ marginBottom: '1.5rem' }}>
+            Based in Stirling, Scotland with right to work in the UK. Expert in evaluating, training, and standardizing Generative AI tools, with a passion for translating technical concepts to deliver measurable business value.
           </p>
         </div>
         <div style={{ marginTop: '3rem' }}>
@@ -60,6 +65,8 @@ export default function About({ isDark }: AboutProps) {
               fontSize: '1.5rem',
               fontWeight: 300,
               marginBottom: '1.5rem',
+              paddingBottom: '0.75rem',
+              borderBottom: `1px solid ${isDark ? '#333' : '#ccc'}`,
               color: isDark ? '#0f0' : '#00a',
               letterSpacing: '-0.01em'
             }}
@@ -81,7 +88,7 @@ export default function About({ isDark }: AboutProps) {
                 Programming Languages
               </h4>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {['Python', 'JavaScript', 'R', 'TypeScript'].map((skill, idx) => (
+                {['Python', 'JavaScript', 'TypeScript', 'SQL', 'R'].map((skill, idx) => (
                   <span
                     key={idx}
                     style={{
@@ -122,13 +129,13 @@ export default function About({ isDark }: AboutProps) {
               </div>
             </div>
 
-            {/* Backend */}
+            {/* Backend & Databases */}
             <div>
               <h4 style={{ marginBottom: '0.75rem', fontSize: '1rem', color: isDark ? '#fff' : '#000' }}>
-                Backend
+                Backend & Databases
               </h4>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {['Django','FastAPI', 'Node.js', 'PostgreSQL', 'Firebase', 'REST API'].map((skill, idx) => (
+                {['Django','FastAPI', 'Node.js', 'PostgreSQL', 'MongoDB', 'MySQL', 'Redis', 'REST API'].map((skill, idx) => (
                   <span
                     key={idx}
                     style={{
@@ -198,6 +205,54 @@ export default function About({ isDark }: AboutProps) {
               </h4>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {['Figma', 'Canva', 'Photoshop', 'Illustrator', 'Responsive Design'].map((skill, idx) => (
+                  <span
+                    key={idx}
+                    style={{
+                      padding: '0.25rem 0.75rem',
+                      border: `1px solid ${isDark ? '#0f0' : '#00a'}`,
+                      color: isDark ? '#0f0' : '#00a',
+                      fontSize: '0.75rem',
+                      fontFamily: 'monospace',
+                      borderRadius: '5px'
+                    }}
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* AI & Machine Learning */}
+            <div>
+              <h4 style={{ marginBottom: '0.75rem', fontSize: '1rem', color: isDark ? '#fff' : '#000' }}>
+                AI & Machine Learning
+              </h4>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {['PyTorch', 'CNNs', 'RNNs', 'NLP', 'RAG Applications', 'Supervised Learning', 'Reinforcement Learning'].map((skill, idx) => (
+                  <span
+                    key={idx}
+                    style={{
+                      padding: '0.25rem 0.75rem',
+                      border: `1px solid ${isDark ? '#0f0' : '#00a'}`,
+                      color: isDark ? '#0f0' : '#00a',
+                      fontSize: '0.75rem',
+                      fontFamily: 'monospace',
+                      borderRadius: '5px'
+                    }}
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* AI Developer Tools */}
+            <div>
+              <h4 style={{ marginBottom: '0.75rem', fontSize: '1rem', color: isDark ? '#fff' : '#000' }}>
+                AI Developer Tools
+              </h4>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {['Cursor', 'Claude Code', 'OpenCode', 'Gemini CLI', 'Docker', 'CI/CD'].map((skill, idx) => (
                   <span
                     key={idx}
                     style={{
