@@ -462,6 +462,27 @@ Available directories: ${Object.keys(fileSystem).map(k => `§DIR§${k}§`).join(
         }
         const parent = parentMap[currentDirectory]
         if (parent && parent !== currentDirectory) {
+          // Scroll to parent section
+          const sectionMap: { [key: string]: string } = {
+            'home': 'home',
+            'about': 'about',
+            'projects': 'projects',
+            'education': 'education',
+            'contact': 'contact'
+          }
+
+          if (sectionMap[parent]) {
+            // Special handling for home - scroll to top
+            if (parent === 'home') {
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            } else {
+              const element = document.getElementById(sectionMap[parent])
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            }
+          }
+
           return `CD_PARENT:${parent}` // Special marker for parent directory
         }
         return '§ERROR§cd: already at root directory§'
