@@ -33,11 +33,6 @@ function App() {
   const mouseRef = useRef({ x: 0.5, y: 0.5 })
   const zoomRef = useRef(3)
 
-  // Detect system theme preference
-  const getSystemTheme = () => {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-  }
-
   const [isDark, setIsDark] = useState(true)
   const [showGame, setShowGame] = useState(false)
   const [showPDF, setShowPDF] = useState(false)
