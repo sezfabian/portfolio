@@ -11,6 +11,7 @@ import Education from './components/Education'
 import Contact from './components/Contact'
 import StaggeredMenu from './components/StaggeredMenu'
 import fabLogo from './assets/fab.png'
+import Snowfall from 'react-snowfall'
 
 const menuItems = [
   { label: 'Home', ariaLabel: 'Go to home page', link: '#home' },
@@ -37,7 +38,7 @@ function App() {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
   }
 
-  const [isDark, setIsDark] = useState(getSystemTheme())
+  const [isDark, setIsDark] = useState(true)
   const [showGame, setShowGame] = useState(false)
   const [showPDF, setShowPDF] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -53,16 +54,6 @@ function App() {
   // Detect mobile device for performance optimizations
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 1010
 
-  // Listen for system theme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleThemeChange = (e: MediaQueryListEvent) => {
-      setIsDark(e.matches)
-    }
-
-    mediaQuery.addEventListener('change', handleThemeChange)
-    return () => mediaQuery.removeEventListener('change', handleThemeChange)
-  }, [])
 
   // Track window resize
   useEffect(() => {
@@ -373,6 +364,7 @@ function App() {
             transition: 'opacity 0.3s ease'
           }}
         >
+          
           <div
             style={{
               fontFamily: 'monospace',
@@ -387,7 +379,7 @@ function App() {
           </div>
         </div>
       )}
-
+      <Snowfall/>
       <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', margin: 0, opacity: isLoading ? 0 : 1, transition: 'opacity 0.3s ease' }}>
         <video
           ref={videoRef}

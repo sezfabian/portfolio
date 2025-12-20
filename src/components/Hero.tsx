@@ -1,7 +1,7 @@
 import './Hero.css'
 import Glitch from './Glitch'
 import GlitchText from './GlitchText';
-import cvPdf from '../assets/Fabian_Cheruiyot_CV_2026.pdf'
+import cvPdf from '../assets/Fabian_CV.pdf'
 
 interface HeroProps {
   isDark: boolean

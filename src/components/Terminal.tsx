@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import './Terminal.css'
-import cvPdf from '../assets/Fabian_Cheruiyot_CV_2026.pdf'
+import cvPdf from '../assets/Fabian_CV.pdf'
 import Glitch from './Glitch'
 
 interface TerminalProps {
