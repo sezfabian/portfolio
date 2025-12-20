@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import type { ReactElement } from 'react'
 import './Terminal.css'
 import cvPdf from '../assets/Fabian_CV.pdf'
 import Glitch from './Glitch'
@@ -160,13 +161,13 @@ const createCommands = (onGameLaunch: () => void, onOpenPDF?: () => void) => ({
         return `Command '${cmd}' not found. Type 'help' for available commands.`
       }
       return `Available commands:
-  ls [--help]      - List directory contents
-  cd [--help]      - Change directory
-  cat [--help]     - Display file contents
-  about [--help]   - Learn about browser data collection
-  game             - Launch jump game
-  help [command]   - Show help for commands
-  clear            - Clear terminal screen
+  §CMD§ls§ [--help]      - List directory contents
+  §CMD§cd§ [--help]      - Change directory
+  §CMD§cat§ [--help]     - Display file contents
+  §CMD§about§ [--help]   - Learn about browser data collection
+  §CMD§game§             - Launch jump game
+  §CMD§help§ [command]   - Show help for commands
+  §CMD§clear§            - Clear terminal screen
 
 Type 'command --help' for more information about a specific command.`
     }
@@ -192,11 +193,11 @@ Options:
   --help    Display this help message
 
 Examples:
-  cat cv.pdf     Open CV PDF in viewer`
+  cat §FILE§cv.pdf§     Open CV PDF in viewer`
       }
 
       if (args.length === 0) {
-        return 'cat: missing file argument. Type "cat --help" for usage.'
+        return '§ERROR§cat: missing file argument§. Type "cat --help" for usage.'
       }
 
       const filename = args[0]
@@ -204,9 +205,9 @@ Examples:
       if (filename === 'cv.pdf') {
         if (onOpenPDF) {
           onOpenPDF()
-          return 'Opening CV...'
+          return 'Opening §FILE§CV§...'
         }
-        return 'Error: PDF viewer not available'
+        return '§ERROR§Error: PDF viewer not available§'
       }
 
       if (filename === 'degrees.txt') {
@@ -272,7 +273,7 @@ Technical Assistant Manager & IT Systems Specialist | Value Chain Supplies | Eld
 • Led marketing campaigns contributing to 60% revenue growth in two years`
       }
 
-      return `cat: ${filename}: No such file or directory`
+      return `§ERROR§cat: ${filename}: No such file or directory§`
     }
   },
   about: {
@@ -382,14 +383,14 @@ Options:
 
 Examples:
   ls              List current directory
-  ls projects     List contents of projects directory`
+  ls §DIR§projects§     List contents of projects directory`
       }
 
       const dir = args[0] || currentDir
       const contents = fileSystem[dir as keyof typeof fileSystem]
 
       if (!contents) {
-        return `ls: cannot access '${dir}': No such directory`
+        return `§ERROR§ls: cannot access '${dir}': No such directory§`
       }
 
       if (Array.isArray(contents)) {
@@ -400,9 +401,9 @@ Examples:
         contents.forEach((item) => {
           // Check if item is a directory (exists as key in fileSystem)
           if (item in fileSystem) {
-            directories.push(item)
+            directories.push(`§DIR§${item}§`)
           } else {
-            files.push(item)
+            files.push(`§FILE§${item}§`)
           }
         })
 
@@ -417,7 +418,8 @@ Examples:
         return output || 'Empty directory'
       }
 
-      return Object.keys(contents).join('  ')
+      const keys = Object.keys(contents)
+      return keys.map(k => `§DIR§${k}§`).join('  ')
     }
   },
   cd: {
@@ -432,16 +434,16 @@ Options:
   --help    Display this help message
 
 Examples:
-  cd projects     Change to projects directory
-  cd about        Change to about directory
-  cd education    Change to education directory
-  cd home         Change to home directory
+  cd §DIR§projects§     Change to projects directory
+  cd §DIR§about§        Change to about directory
+  cd §DIR§education§    Change to education directory
+  cd §DIR§home§         Change to home directory
 
-Available directories: ${Object.keys(fileSystem).join(', ')}`
+Available directories: ${Object.keys(fileSystem).map(k => `§DIR§${k}§`).join(', ')}`
       }
 
       if (args.length === 0) {
-        return 'cd: missing directory argument. Type "cd --help" for usage.'
+        return '§ERROR§cd: missing directory argument§. Type "cd --help" for usage.'
       }
 
       const newDir = args[0]
@@ -462,11 +464,11 @@ Available directories: ${Object.keys(fileSystem).join(', ')}`
         if (parent && parent !== currentDirectory) {
           return `CD_PARENT:${parent}` // Special marker for parent directory
         }
-        return 'cd: already at root directory'
+        return '§ERROR§cd: already at root directory§'
       }
 
       if (!(newDir in fileSystem)) {
-        return `cd: ${newDir}: No such directory`
+        return `§ERROR§cd: ${newDir}: No such directory§`
       }
 
       // Scroll to corresponding section
@@ -490,7 +492,7 @@ Available directories: ${Object.keys(fileSystem).join(', ')}`
         }
       }
 
-      return `Changed directory to ${newDir}`
+      return `Changed directory to §DIR§${newDir}§`
     }
   },
   clear: {
@@ -500,9 +502,59 @@ Available directories: ${Object.keys(fileSystem).join(', ')}`
   }
 })
 
+// Helper function to parse and colorize terminal output
+const parseColoredOutput = (text: string, isDark: boolean) => {
+  const colors = {
+    dir: isDark ? '#00bfff' : '#0066cc',      // Cyan/Blue for directories
+    file: isDark ? '#90ee90' : '#008800',     // Light green for files
+    command: isDark ? '#0f0' : '#00a',        // Bright green/blue for commands
+    text: isDark ? '#0f0' : '#000',           // Default text color
+    error: isDark ? '#ff6b6b' : '#cc0000'     // Red for errors
+  }
+
+  // Split by markers and create colored spans
+  const parts: ReactElement[] = []
+  let currentIndex = 0
+  const regex = /§(DIR|FILE|ERROR|CMD)§([^§]+)§/g
+  let match
+
+  while ((match = regex.exec(text)) !== null) {
+    // Add text before the match
+    if (match.index > currentIndex) {
+      const beforeText = text.substring(currentIndex, match.index)
+      if (beforeText) {
+        parts.push(<span key={`text-${currentIndex}`}>{beforeText}</span>)
+      }
+    }
+
+    // Add colored element
+    const [, type, content] = match
+    let color = colors.text
+    if (type === 'DIR') color = colors.dir
+    else if (type === 'FILE') color = colors.file
+    else if (type === 'ERROR') color = colors.error
+    else if (type === 'CMD') color = colors.command
+
+    parts.push(
+      <span key={`${type}-${match.index}`} style={{ color, fontWeight: 'bold' }}>
+        {content}
+      </span>
+    )
+
+    currentIndex = match.index + match[0].length
+  }
+
+  // Add remaining text
+  if (currentIndex < text.length) {
+    parts.push(<span key={`text-${currentIndex}`}>{text.substring(currentIndex)}</span>)
+  }
+
+  return parts.length > 0 ? <>{parts}</> : text
+}
+
 export default function Terminal({ isDark, onGameLaunch, isGameActive = false, showPDF, setShowPDF, isMaximized, setIsMaximized, isMinimized, setIsMinimized }: TerminalProps) {
   const [history, setHistory] = useState<{ input: string; output: string }[]>([
-    { input: '', output: 'Welcome to my Portfolio Terminal. Type "help" for available commands.\nTry "cd about" or "cd projects" to navigate sections.' }
+    { input: '', output: 'Welcome to my Portfolio Terminal. Type "§CMD§help§" for available commands.\nTry "§CMD§cd§ §DIR§about§" or "§CMD§cd§ §DIR§projects§" to navigate sections.' }
   ])
   const [input, setInput] = useState('')
   const [currentDir, setCurrentDir] = useState('home')
@@ -547,7 +599,7 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
       const result = await commands[command as keyof typeof commands].execute(commandArgs, currentDir)
 
       if (result === 'CLEAR') {
-        setHistory([{ input: '', output: 'Welcome to my Portfolio Terminal. Type "help" for available commands.\nTry "cd about" or "cd projects" to navigate sections.' }])
+        setHistory([{ input: '', output: 'Welcome to my Portfolio Terminal. Type "§CMD§help§" for available commands.\nTry "§CMD§cd§ §DIR§about§" or "§CMD§cd§ §DIR§projects§" to navigate sections.' }])
         return
       }
 
@@ -556,7 +608,7 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
         if (result.startsWith('CD_PARENT:')) {
           const parent = result.replace('CD_PARENT:', '')
           setCurrentDir(parent)
-          output = `Changed directory to ${parent}`
+          output = `Changed directory to §DIR§${parent}§`
         } else {
           setCurrentDir(args[0])
         }
@@ -564,7 +616,7 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
 
       output = result
     } else {
-      output = `Command not found: ${command}. Type 'help' for available commands.`
+      output = `§ERROR§Command not found: ${command}§. Type 'help' for available commands.`
     }
 
     setHistory([...history, { input: `${currentDir}$ ${cmd}`, output }])
@@ -800,28 +852,22 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
       </div>
 
       <div
+        ref={terminalRef}
         style={{
           flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: 0,
-          background: 'transparent'
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          marginBottom: '0.5rem',
+          background: 'transparent',
+          minHeight: 0
         }}
       >
         <Glitch glitchOn={['hover']} interval={7000} glitchDuration={1000} intensity="high"
         glitchColors={{color1: isDark ? '0, 255, 0' : '0, 0, 0', color2: isDark ? '255, 255, 255' : '0, 0, 170'}} >
-        <div
-          ref={terminalRef}
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            marginBottom: '0.5rem',
-            background: 'transparent'
-          }}
-        >
+        <div>
         {history.map((item, idx) => (
           <div key={idx}>
-            {item.input && <div style={{ color: isDark ? '#0f0' : '#00a' }}>{item.input}</div>}
+            {item.input && <div style={{ color: isDark ? '#0f0' : '#00a', fontWeight: 'bold' }}>{item.input}</div>}
             {item.output && (
               <div style={{
                 whiteSpace: 'pre-wrap',
@@ -829,7 +875,7 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
                 color: isDark ? '#0f0' : '#000',
                 background: 'transparent'
               }}>
-                {item.output}
+                {parseColoredOutput(item.output, isDark)}
               </div>
             )}
           </div>
