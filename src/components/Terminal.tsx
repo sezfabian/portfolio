@@ -532,7 +532,10 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
     const parts = cmd.trim().split(' ')
     const command = parts[0].toLowerCase()
     const args = parts.slice(1)
-    const commands = createCommands(onGameLaunch, () => setShowPDF(true))
+    const commands = createCommands(onGameLaunch, () => {
+      setShowPDF(true)
+      setIsMaximized(true)
+    })
 
     let output = ''
 
