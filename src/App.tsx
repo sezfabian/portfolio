@@ -10,13 +10,13 @@ import Projects from './components/Projects'
 import Education from './components/Education'
 import Contact from './components/Contact'
 import StaggeredMenu from './components/StaggeredMenu'
+import MysteryGlyph from './components/MysteryGlyph'
 import fabLogo from './assets/fab.png'
-import Snowfall from 'react-snowfall'
 
 const menuItems = [
   { label: 'Home', ariaLabel: 'Go to home page', link: '#home' },
   { label: 'About', ariaLabel: 'Learn about me', link: '#about' },
-  { label: 'Projects', ariaLabel: 'View my projects', link: '#projects' },
+  { label: 'Portfolio', ariaLabel: 'View my portfolio', link: '#projects' },
   { label: 'Education', ariaLabel: 'View my education', link: '#education' },
   { label: 'Contact', ariaLabel: 'Get in touch', link: '#contact' }
 ];
@@ -40,7 +40,6 @@ function App() {
   const [loadingText, setLoadingText] = useState('DECRYPTING')
   const [isTerminalMaximized, setIsTerminalMaximized] = useState(false)
   const [isTerminalMinimized, setIsTerminalMinimized] = useState(false)
-  const [videoSpeed, setVideoSpeed] = useState(1)
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight
@@ -239,7 +238,7 @@ function App() {
     video.addEventListener('canplaythrough', handleVideoCanPlay)
 
     // Set video playback speed
-    video.playbackRate = videoSpeed
+    video.playbackRate = 0.5
 
     // Play video only when game is not active
     if (!showGame) {
@@ -332,7 +331,7 @@ function App() {
       video.removeEventListener('canplaythrough', handleVideoCanPlay)
       cancelAnimationFrame(animationId)
     }
-  }, [isDark, windowSize, showGame, videoSpeed])
+  }, [isDark, windowSize, showGame])
 
   // Set CSS variable on root for gradients
   useEffect(() => {
@@ -374,7 +373,6 @@ function App() {
           </div>
         </div>
       )}
-      <Snowfall/>
       <div style={{ position: 'relative', width: '100vw', minHeight: '100vh', margin: 0, opacity: isLoading ? 0 : 1, transition: 'opacity 0.3s ease' }}>
         <video
           ref={videoRef}
@@ -411,8 +409,6 @@ function App() {
         isFixed={true}
         onThemeToggle={() => setIsDark(!isDark)}
         isDark={isDark}
-        videoSpeed={videoSpeed}
-        onVideoSpeedChange={setVideoSpeed}
       />
 
       <main style={{
@@ -431,7 +427,7 @@ function App() {
           }}>
             {!showGame && !showPDF && !isTerminalMaximized ? (
               <>
-                <Hero isDark={isDark} />
+                <Hero isDark={isDark} onMysteryLaunch={() => setShowGame(true)} />
                 <About isDark={isDark} />
                 <Projects isDark={isDark} />
                 <Education isDark={isDark} />
@@ -451,6 +447,19 @@ function App() {
           </div>
         </div>
       </main>
+
+      {window.innerWidth > 1010 && !isTerminalMinimized && !isTerminalMaximized && !showGame && !showPDF && (
+        <MysteryGlyph
+          isDark={isDark}
+          onActivate={() => setShowGame(true)}
+          style={{
+            position: 'fixed',
+            left: '20rem',
+            bottom: '33.5rem',
+            zIndex: 150
+          }}
+        />
+      )}
 
       <Terminal
         isDark={isDark}

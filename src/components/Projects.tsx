@@ -1,6 +1,6 @@
 import './Projects.css'
 import { useState } from 'react'
-import trackImg from '../assets/farm.png'
+import endovilleImg from '../assets/endoville.png'
 import mikrotikImg from '../assets/mikrotik.png'
 import guntuImg from '../assets/guntu.png'
 import ackImg from '../assets/ack.png'
@@ -21,11 +21,11 @@ interface Project {
 
 const projects: Project[] = [
   {
-    title: 'TRACK YOUR FARM',
-    description: 'A comprehensive farm management platform that helps farmers run their operations like CEOs.',
-    tech: ['Vue.js', 'Django', 'PostgreSQL', 'Gemini-API','Mobile Responsive'],
-    image: trackImg,
-    link: 'https://app.trackyourfarm.com'
+    title: 'ENDOVILLE HEALTH',
+    description: 'A modern wellness ecommerce platform for Endoville Health, built to showcase premium supplements and vitamins with a clean shopping experience, fast performance, and seamless customer engagement across the USA and Kenya.',
+    tech: ['Django', 'Next.js', 'shadcn/ui', 'Zensical', 'TanStack Query', 'Zoho Services', 'DigitalOcean'],
+    image: endovilleImg,
+    link: 'https://endovillehealth.com/'
   },
   {
     title: 'MIKROTIK CLOUDPILOT API',
@@ -102,7 +102,7 @@ export default function Projects({ isDark }: ProjectsProps) {
             letterSpacing: '-0.02em'
           }}
         >
-          PROJECTS
+          PORTFOLIO
         </h2>
 
         <div

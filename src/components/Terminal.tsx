@@ -235,7 +235,6 @@ ALX - Holberton School, Full-Stack Software Engineer
         return `CONTACT INFORMATION
 
 Location: Stirling, Scotland
-Phone:    +44 734 9688 242
 Email:    cheruiyotfabian@gmail.com
 
 LinkedIn: linkedin.com/in/cheruiyot-fabian-4b9542142
@@ -827,49 +826,51 @@ export default function Terminal({ isDark, onGameLaunch, isGameActive = false, s
       <div
         style={{
           display: 'flex',
-          justifyContent: 'flex-end',
           gap: '0.5rem',
           marginBottom: '0.5rem',
           paddingBottom: '0.5rem',
+          justifyContent: 'flex-end',
           borderBottom: `1px solid ${isDark ? '#333' : '#ccc'}`
         }}
       >
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            handleMinimize()
-          }}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: isDark ? '#0f0' : '#00a',
-            fontSize: '1.2rem',
-            cursor: 'pointer',
-            padding: '0.25rem 0.5rem',
-            lineHeight: 1
-          }}
-          title="Minimize"
-        >
-          −
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            handleMaximize()
-          }}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: isDark ? '#0f0' : '#00a',
-            fontSize: '1.2rem',
-            cursor: 'pointer',
-            padding: '0.25rem 0.5rem',
-            lineHeight: 1
-          }}
-          title={isMaximized ? 'Restore' : 'Maximize'}
-        >
-          {isMaximized ? '⤡' : '⤢'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              handleMinimize()
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: isDark ? '#0f0' : '#00a',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              padding: '0.25rem 0.5rem',
+              lineHeight: 1
+            }}
+            title="Minimize"
+          >
+            −
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              handleMaximize()
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: isDark ? '#0f0' : '#00a',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              padding: '0.25rem 0.5rem',
+              lineHeight: 1
+            }}
+            title={isMaximized ? 'Restore' : 'Maximize'}
+          >
+            {isMaximized ? '⤡' : '⤢'}
+          </button>
+        </div>
       </div>
 
       <div

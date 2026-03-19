@@ -4,7 +4,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ isDark, onThemeToggle }: NavbarProps) {
-  const pages = ['Home', 'About', 'Projects', 'Contact']
+  const pages = ['Home', 'About', 'Portfolio', 'Contact']
 
   return (
     <nav
@@ -36,7 +36,7 @@ export default function Navbar({ isDark, onThemeToggle }: NavbarProps) {
         {pages.map((page) => (
           <a
             key={page}
-            href={`#${page.toLowerCase()}`}
+            href={`#${page === 'Portfolio' ? 'projects' : page.toLowerCase()}`}
             style={{
               color: isDark ? '#fff' : '#000',
               textDecoration: 'none',

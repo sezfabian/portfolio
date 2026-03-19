@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { parseGIF, decompressFrames } from 'gifuct-js'
 import alienGif from '../assets/alien.gif'
 import crateImg from '../assets/ice.png'
-import alienAudio from '../assets/alien.ogg'
 // import jumpSound from '../assets/jump.ogg' // Uncomment when jump sound file is added
 import './Game.css'
 
@@ -14,7 +13,6 @@ interface GameProps {
 
 export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
   const jumpSoundRef = useRef<(() => void) | null>(null)
   const [score, setScore] = useState(0)
   const [highScore, setHighScore] = useState(() => {
@@ -22,9 +20,7 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
     return saved ? parseInt(saved, 10) : 0
   })
   const [isGameOver, setIsGameOver] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
   const isDarkRef = useRef(isDark)
-  const isMutedRef = useRef(isMuted)
   const gameSpeedRef = useRef(1)
   const levelRef = useRef(1)
   const failedLevelRef = useRef(1)
@@ -37,25 +33,11 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
     isDarkRef.current = isDark
   }, [isDark])
 
+  // Create jump sound effect
   useEffect(() => {
-    isMutedRef.current = isMuted
-  }, [isMuted])
-
-  // Handle background music and sound effects
-  useEffect(() => {
-    // Create background music audio element
-    const audio = new Audio(alienAudio)
-    audio.loop = true
-    audio.volume = isMuted ? 0 : 0.3 // Set volume to 30% for background music
-    audioRef.current = audio
-
-    // Create jump sound effect using Web Audio API (programmatic beep)
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
 
     const createJumpSound = () => {
-      // Check mute status at call time, not creation time
-      if (isMutedRef.current) return
-
       const oscillator = audioContext.createOscillator()
       const gainNode = audioContext.createGain()
 
@@ -76,33 +58,12 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
     // Store the function in ref
     jumpSoundRef.current = createJumpSound
 
-    // Play audio when game starts
-    const playPromise = audio.play()
-
-    // Handle play promise to avoid errors
-    if (playPromise !== undefined) {
-      playPromise.catch(error => {
-        console.log('Audio autoplay prevented:', error)
-      })
-    }
-
-    // Cleanup: stop and remove audio when component unmounts
+    // Cleanup sound context when component unmounts
     return () => {
-      audio.pause()
-      audio.currentTime = 0
-      audioRef.current = null
       jumpSoundRef.current = null
       audioContext.close()
     }
   }, [])
-
-  // Handle mute toggle
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : 0.3
-    }
-    // jumpSoundRef stores a function, so mute is handled inside the function
-  }, [isMuted])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -311,10 +272,14 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
     jumpTriggerRef.current = performJump
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === ' ' || e.key === 'ArrowUp') && !gameOver) {
+      const isSpace = e.key === ' ' || e.code === 'Space'
+
+      if ((isSpace || e.key === 'ArrowUp') && !gameOver) {
+        e.preventDefault()
         performJump()
       }
-      if (e.key === 'r' && gameOver) {
+      if ((e.key === 'r' || isSpace) && gameOver) {
+        e.preventDefault()
         resetGame()
       }
     }
@@ -349,21 +314,35 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
       spawnRateRef.current = Math.max(100, 900 - (failedLevelRef.current - 1) * 12)
 
       setScore(currentScore)
-
-      // Restart audio from beginning when restarting game
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0
-        audioRef.current.play().catch(error => {
-          console.log('Audio play prevented:', error)
-        })
-      }
     }
 
     // Store reset function in ref for external access
     resetGameRef.current = resetGame
 
+    const handleCanvasClick = (e: MouseEvent) => {
+      if (!gameOver) return
+
+      const rect = canvas.getBoundingClientRect()
+      const scaleX = canvas.width / rect.width
+      const scaleY = canvas.height / rect.height
+      const clickX = (e.clientX - rect.left) * scaleX
+      const clickY = (e.clientY - rect.top) * scaleY
+      const centerX = canvas.width / 2
+      const titleY = canvas.height / 2 - 20
+      const subtitleY = canvas.height / 2 + 10
+      const clickMinX = centerX - 180
+      const clickMaxX = centerX + 180
+      const clickMinY = titleY - 24
+      const clickMaxY = subtitleY + 16
+
+      if (clickX >= clickMinX && clickX <= clickMaxX && clickY >= clickMinY && clickY <= clickMaxY) {
+        resetGame()
+      }
+    }
+
     window.addEventListener('keydown', handleKeyDown)
     canvas.addEventListener('touchstart', handleTouch)
+    canvas.addEventListener('click', handleCanvasClick)
 
     const gameLoop = () => {
       if (!ctx || !canvas) return
@@ -435,11 +414,6 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
             (player.y - 50) + player.height - collisionMargin > groundY + 30 - obstacle.height
           ) {
             gameOver = true
-            // Pause and reset audio on game over
-            if (audioRef.current) {
-              audioRef.current.pause()
-              audioRef.current.currentTime = 0
-            }
             // Delay showing restart button by 1 second
             setTimeout(() => {
               setIsGameOver(true)
@@ -516,9 +490,9 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
         ctx.fillStyle = isDarkRef.current ? '#fff' : '#000'
         ctx.font = '24px monospace'
         ctx.textAlign = 'center'
-        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20)
+        ctx.fillText('YOU JUST GOT ICED', canvas.width / 2, canvas.height / 2 - 20)
         ctx.font = '16px monospace'
-        ctx.fillText('Press R or tap to restart', canvas.width / 2, canvas.height / 2 + 10)
+        ctx.fillText('Press SPACE or click text to restart', canvas.width / 2, canvas.height / 2 + 10)
       }
 
       requestAnimationFrame(gameLoop)
@@ -529,6 +503,7 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
       canvas.removeEventListener('touchstart', handleTouch)
+      canvas.removeEventListener('click', handleCanvasClick)
     }
   }, [])
 
@@ -588,35 +563,9 @@ export default function Game({ isDark, onClose, isMobile = false }: GameProps) {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          {/* Mute button */}
-          <button
-            onClick={() => setIsMuted(!isMuted)}
-            style={{
-              background: 'transparent',
-              border: `2px solid ${isDark ? '#0f0' : '#00a'}`,
-              borderRadius: '4px',
-              color: isDark ? '#0f0' : '#00a',
-              fontSize: '0.9rem',
-              cursor: 'pointer',
-              padding: '0.3rem 0.6rem',
-              fontFamily: 'monospace',
-              transition: 'all 0.2s ease',
-              fontWeight: 'bold'
-            }}
-            title={isMuted ? 'Unmute' : 'Mute'}
-          >
-            {isMuted ? '[X]' : '[♪]'}
-          </button>
           {/* Close button */}
           <button
-            onClick={() => {
-              // Stop audio when closing game
-              if (audioRef.current) {
-                audioRef.current.pause()
-                audioRef.current.currentTime = 0
-              }
-              onClose()
-            }}
+            onClick={onClose}
             style={{
               background: 'transparent',
               border: 'none',

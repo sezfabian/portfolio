@@ -1,13 +1,15 @@
 import './Hero.css'
 import Glitch from './Glitch'
 import GlitchText from './GlitchText';
+import MysteryGlyph from './MysteryGlyph'
 import cvPdf from '../assets/Fabian_CV.pdf'
 
 interface HeroProps {
   isDark: boolean
+  onMysteryLaunch: () => void
 }
 
-export default function Hero({ isDark }: HeroProps) {
+export default function Hero({ isDark, onMysteryLaunch }: HeroProps) {
   return (
     <div
       style={{
@@ -60,6 +62,14 @@ export default function Hero({ isDark }: HeroProps) {
         >
           Want to know me better? Explore the terminal or...
         </p>
+
+        {window.innerWidth <= 1010 && (
+          <MysteryGlyph
+            isDark={isDark}
+            onActivate={onMysteryLaunch}
+            style={{ marginTop: '1.5rem' }}
+          />
+        )}
 
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '3rem', position: 'relative' }}>

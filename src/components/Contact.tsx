@@ -71,25 +71,6 @@ export default function Contact({ isDark }: ContactProps) {
 
             <div>
               <h4 style={{ fontSize: '0.85rem', fontWeight: 300, color: isDark ? '#0f0' : '#00a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-                Phone
-              </h4>
-              <a
-                href="tel:+447349688242"
-                style={{
-                  fontSize: '1rem',
-                  color: isDark ? '#fff' : '#000',
-                  textDecoration: 'none',
-                  transition: 'color 0.2s'
-                }}
-                onMouseOver={(e) => e.currentTarget.style.color = isDark ? '#0f0' : '#00a'}
-                onMouseOut={(e) => e.currentTarget.style.color = isDark ? '#fff' : '#000'}
-              >
-                +44 734 9688 242
-              </a>
-            </div>
-
-            <div>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 300, color: isDark ? '#0f0' : '#00a', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
                 Email
               </h4>
               <a
